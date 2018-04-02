@@ -27,6 +27,7 @@ $ npm install babel-polyfill
 ```
 
 - 2 修改build配置环境webpack.base.conf.js
+
 ![](https://github.com/YaohuiHou/Frontend-Study/blob/master/vue/axios/img/WechatIMG128.jpeg)
 
 - 3 增加axios的jsonp方法
