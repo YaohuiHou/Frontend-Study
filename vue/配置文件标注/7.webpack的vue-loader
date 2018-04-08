@@ -1,0 +1,20 @@
+### vue-loader文件配置了css加载器属性。
+
+```
+var utils = require('./utils')  // 引入小工具模块
+var config = require('../config') // 获取config/index.js的默认配置
+var isProduction = process.env.NODE_ENV === 'production'  // isProduction:判断当前环境
+module.exports = {
+  loaders: utils.cssLoaders({   // 调用utils.cssLoaders
+    sourceMap: isProduction // 是否开启sourceMap
+      ? config.build.productionSourceMap
+      : config.dev.cssSourceMap,
+    extract: isProduction // 如果是生产环境，css抽离出单独文件
+  }),
+  postcss: [
+    require('autoprefixer')({ // Autoprefixer是一个基于PostCSS的智能添加CSS前缀的插件
+      browsers: ['last 2 versions'] // 主要浏览器的最新2个版本
+    })
+  ]
+}
+```
