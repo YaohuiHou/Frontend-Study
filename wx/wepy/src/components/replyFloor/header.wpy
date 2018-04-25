@@ -1,0 +1,92 @@
+<style scoped lang="less">
+.floor-content{
+  background: #fff;
+  padding: 20rpx 32rpx 12rpx;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  .head{
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 50%;
+  }
+  .content{
+    flex: 1;
+    display: flex;
+    margin-left: 16rpx;
+    justify-content:space-between;
+    flex-direction:column;
+    position: relative;
+    .name{
+      font-size: 28rpx;
+      color: #576B95;
+      line-height: 36rpx;
+    }
+    .messge{
+      margin-top: 12rpx;
+      font-size: 32rpx;
+      color: #353535;
+      letter-spacing: 1rpx;
+      word-break: break-all;
+      text-align: justify;
+      line-height: 48rpx;
+    }
+  }
+  .footer{
+    line-height: 60rpx;
+    margin-top: 4rpx;
+    font-size: 24rpx;
+    color: #B2B2B2;
+    .look-post{
+      margin-left: 24rpx;
+      font-size: 28rpx;
+      color: #576B95;
+      letter-spacing: 0;
+      line-height: 60rpx;
+      display: inline-block;
+    }
+  }
+}
+</style>
+<template>
+  <view class="floor-content">
+    <image src="{{floor.headimgurl ? floor.headimgurl : headpic}}" class="head" 
+      @error="imgError" 
+      @tap="userLink">
+    </image>
+    <view class="content">
+      <view class="name"><text>{{floor.nickname}}</text></view>
+      <view class="messge">
+        <text>{{floor.content}}</text>
+      </view>
+      <view class="footer">
+        {{floor.date}}
+        <navigator url="postDetail?id={{pid}}" hover-class="none" class="look-post">查看原帖</navigator>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import mixin from '../../mixins'
+  export default class Counter extends wepy.component {
+    props = {
+      floor: {},
+      pid: String
+    }
+    mixins = [mixin]
+    data = {
+      headpic: 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+    }
+    watch = {
+    }
+    methods = {
+      imgError (e) {
+        this.floor.headimgurl = 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+      },
+      userLink () {
+        this.toUserPage(this.floor.openid)
+      }
+    }
+  }
+</script>

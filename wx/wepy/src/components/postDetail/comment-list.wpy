@@ -1,0 +1,184 @@
+<style scoped type="less">
+  .comment-list{
+    position: relative;
+    margin-top: 10px;
+    display: flex;
+    .head{
+      width: 64rpx;
+      height: 64rpx;
+      border-radius: 50%;
+      margin-right:16rpx;
+    }
+    .content{
+      flex: 1;
+      display: flex;
+      justify-content:space-between;
+      flex-direction:column;
+      position: relative;
+      padding-bottom: 12rpx;
+      overflow: hidden;
+      position: relative;
+      .delete {
+        font-size:28rpx;
+        color:#888;
+        position: absolute;
+        right: 8rpx;
+      }
+      &::after{
+        content: " ";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        border-bottom: 1px solid #eee;
+        color: rgba(23,24,26,.12);
+        -webkit-transform-origin: 0 100%;
+        transform-origin: 0 100%;
+        -webkit-transform: scaleY(0.5);
+        transform: scaleY(0.5);
+      }
+      &:last-child::after{
+        content: "";
+        height: 0px;
+      }
+      .name{
+        font-size: 28rpx;
+        color: #576B95;
+        line-height: 36rpx;
+      }
+      .messge{
+        margin-top: 12rpx;
+        font-size: 32rpx;
+        color: #353535;
+        letter-spacing: 1rpx;
+        word-break: break-all;
+        line-height: 48rpx;
+        .messge-img{
+          margin:24rpx auto 0;
+          overflow: hidden;
+          image{
+            width: 100%;
+            margin:0 auto;
+          }
+        }
+      }
+      .reply-wrap{
+        background: rgba(178,178,178,0.12);
+        border-radius: 4rpx;
+        margin:12rpx 0 8rpx;
+        padding:4rpx 24rpx 20rpx;
+        .list{
+          margin-top: 16rpx;
+          font-size: 24rpx;
+          color: #5C6066;
+          line-height: 36rpx;
+        }
+        .name{
+          color: #576B95;
+        }
+        .img{
+          border-radius: 2px;
+          width: 48rpx;
+          height: 28rpx;
+          display: inline-block;
+          background: rgba(87,107,149,0.60);
+          color: #fff;
+          line-height:28rpx;
+          font-size: 20rpx; 
+          text-align: center;
+          vertical-align: 2rpx;
+        }
+        .look-more{
+          font-size: 28rpx;
+          color: #576B95;
+          margin-top: 4rpx;
+          line-height: 60rpx;
+          margin-bottom: -12rpx;
+        }
+      }
+      .footer{
+        line-height: 60rpx;
+        margin-top: 4rpx;
+        font-size: 24rpx;
+        color: #B2B2B2;
+        .like,.discuss{
+          padding: 0 16rpx;
+          float: right;
+          font-size: 28rpx;
+          &:before{
+            margin-right: 8rpx;
+            content: '\e777';
+            font-family: 'vanca'
+          }
+        }
+        .discuss{
+          padding-right: 0;
+        }
+        .discuss:before{
+          content: '\e77e';
+        }
+      }
+    }
+  }
+</style>
+<template>
+  <view class="comment-list">
+    <image src="{{list.avatar ? list.avatar : headimgurl}}" @error="imgError" class="head" data-id="{{list.openid}}" @tap="userLink"></image>
+    <view class="content">
+      <view class="delete" @tap.stop="delete" wx:if="{{list.manager}}">删除</view>
+      <view class="name">{{list.nickname ? list.nickname : '火星网友'}}</view>
+      <view class="messge">
+        <text>{{list.content}}</text>
+        <view class="messge-img" wx:for="{{list.images}}" wx:key="{{index}}">
+          <image src="{{item}}" mode="widthFix"></image>
+        </view>
+      </view>
+      <navigator 
+        class="reply-wrap" 
+        wx:if="{{list.replies.length}}" 
+        url="replyFloor?id={{pid}}&commentId={{list.commentId}}">
+        <view class="list" wx:for="{{list.replies}}" wx:key="index" wx:if="{{index < 3}}">
+          <text class="name" data-id="{{item.openid}}">{{item.nickname ? item.nickname : '火星网友'}}</text> ：{{item.content}}
+          <text class="img" wx:if="{{item.images.length}}">图片</text>
+        </view>
+        <view class="look-more" wx:if="{{list.replies.length > 3}}">点击查看更多 ></view>
+      </navigator>
+      <view class="footer">
+        {{list.date}}
+        <navigator 
+          class="discuss" 
+          hover-class="none" 
+          url="toReplay?id={{pid}}&commentId={{list.commentId}}&originUid={{list.openid}}">
+          <text>评论</text></navigator>
+        <!-- <view class="like"><text>{{list.liked}}</text></view> -->
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import mixin from '../../mixins'
+  export default class Top extends wepy.component {
+    props = {
+      list: {},
+      pid: String
+    }
+    mixins = [mixin]
+    methods = {
+      imgError (e) {
+        this.list.avatar = 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+      },
+      userLink (e) {
+        this.toUserPage(e.target.dataset['id'])
+      },
+      delete () {
+        let { commentId, openid } = this.list
+        this.$emit('eventDeleteComment', commentId, openid)
+      }
+    }
+    data = {
+      headimgurl: 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+    }
+  }
+</script>

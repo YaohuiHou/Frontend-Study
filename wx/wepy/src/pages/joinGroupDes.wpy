@@ -1,0 +1,139 @@
+<style lang="less">
+page {
+  background-image: linear-gradient(0deg, #ffc551 0%, #ff9400 100%);
+}
+.container {
+  padding: 0 16rpx;
+  box-sizing: border-box;
+}
+.award {
+  margin-top: 28px;
+  .main {
+    margin-top: 40rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    image {
+      width: 150rpx;
+      height: 120rpx;
+    }
+    text {
+      font-size: 28rpx;
+      color: #7d4900;
+      line-height: 60rpx;
+      font-weight: bold;
+    }
+  }
+  
+}
+.join-term{
+  margin-top: 20rpx;
+  padding: 0 40rpx 40rxp;
+  .add-phone{
+    font-size: 36rpx;
+    color: #353535;
+    line-height: 36rpx;
+    padding:58rpx 0;
+    display: flex;
+    align-items: center;
+    text{
+      flex:1;
+      margin-left: 24rpx;
+    }
+    &:before{
+      content:'\e7b6';
+      font-family: 'vanca';
+      background-image: linear-gradient(0deg, #FE8C02 0%, #FFCB00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      border-radius: 8px;
+    }
+    &:after{
+      display: block;
+      content:'';
+      background: url('https://s.kcimg.cn/wechat/vanca/no-content.png') 50% 50%;
+      background-size: cover;
+      width: 36px;
+      height: 36px;
+      float: right;
+    }
+  }
+  .to-join{
+      text-align: center;
+      width: 560rpx;
+      height: 88rpx;
+      line-height: 88rpx;
+      background-image: linear-gradient(44deg,  #FFB200 0%, #FD7B1E 100%);
+      box-shadow: 0 2px 12px 0 rgba(251,156,51,0.40);
+      border-radius: 200rpx;
+      font-size: 36rpx;
+      color: #FFFFFF;
+      margin:0 auto;
+    }
+}
+</style>
+<template>
+  <view class="container">
+
+    <view class="award group-card">
+      <view class="title">加入成功后可获得以下奖励</view>
+      <view class="main">
+        <view class="list">
+          <image src="https://s.kcimg.cn/wechat/vanca/interaction.png"></image>
+          <text>团内互动</text>
+        </view>
+        <view class="list">
+          <image src="https://s.kcimg.cn/wechat/vanca/coin.png"></image>
+          <text>牛币奖励</text>
+        </view>
+        <view class="list">
+          <image src="https://s.kcimg.cn/wechat/vanca/more-reward.png"></image>
+          <text>更多奖励</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="join-term group-card">
+      <view class="title">加入条件</view>
+      <view class="add-phone"><text>绑定手机号</text></view>
+      <navigator url="/pages/corps/addPhone?id={{id}}&groupName={{groupName}}" hover-class="none" class="to-join">立即申请</navigator>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '加入小组',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTextStyle: 'black',
+    enablePullDownRefresh: false
+  };
+  components = {};
+
+  mixins = [mixin];
+
+  data = {
+    id: '',
+    groupName: ''
+  };
+  events = {};
+  computed = {};
+  onPullDownRefresh() {}
+  methods = {};
+  onLoad(option) {
+    this.id = option.groupId
+    this.groupName = option.groupName
+    console.log(option)
+  }
+}
+</script>

@@ -1,0 +1,88 @@
+<style lang="less" scoped>
+    .initialize{
+    .header{
+      background: #fff;
+      padding:8px 16px 56px;
+      box-sizing: border-box;
+      position: relative;
+      .next{
+        background: #FF9400;
+        border-radius: 4px;
+        width: 64px;
+        height: 32px;
+        font-size: 16px;
+        color: rgba(255,255,255,1);
+        padding: 0;
+        margin:0;
+        line-height: 32px;
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        &.disable{
+          background: rgba(255,119,0,0.40);
+          color: rgba(255,255,255,0.40);
+        }
+      }
+    }
+    .textarea{
+      min-height: 90px;
+      textarea{
+        width: 100%;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: justify;
+      }
+    }
+    .tips{
+      clear: both;
+      font-size: 14px;
+      color: #B2B2B2;
+      line-height: 22px;
+      padding: 12px 16px;
+      .list{
+        display: block;
+      }
+    }
+  }
+</style>
+<template>
+  <view class="initialize">
+    <view class="header">
+      <view class="textarea">
+        <textarea name="title"
+          @input="changeTitle"
+          placeholder-style="color: rgba(53,53,53,0.20);"
+          auto-height
+          placeholder="写下你遇到的问题(必填，6-48字)" maxlength="48" />
+      </view>
+      <button class="next {{title.length>5?'':'disable'}}" @tap="nextShow">下一步</button>  
+    </view>
+    <view class="tips">
+      <text class="list">提示：</text>
+      <text class="list">1.标题会直接被回答者看到，是他们决定回不回答的重要标准。描述越清晰完整，越容易收到满意回答</text>
+      <text class="list">2.如有更复杂的问题说明，可在“下一步”补充</text>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+export default class Index extends wepy.component {
+  props = {}
+  data = {
+    title: ''
+  }
+  mixins = [mixin]
+  methods = {
+    changeTitle(event) {
+      this.title = event.detail.value
+      this.$emit('changeTitle', event.detail.value)
+    },
+    nextShow (event) {
+      if (this.title.length >= 6) {
+        this.$emit('nextShow')
+      }
+    }
+  }
+}
+</script>

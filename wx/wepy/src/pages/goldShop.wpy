@@ -1,0 +1,113 @@
+<style lang="less">
+  page{
+    height: 100%;
+  }
+  .shop{
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .shop-header{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 32rpx;
+    height: 120rpx;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1rpx solid #E5E5E5;
+  }
+  .gold{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 80rpx;
+    color: #FF9400;
+    line-height: 88rpx;
+  }
+  .gold text{
+    margin-right: 16rpx;
+    width: 60rpx;
+    height: 60rpx;
+    background-image: url('https://s.kcimg.cn/wechat/vanca/gold-3x.png');
+    background-size: cover;
+  }
+  .shop-header text{
+    font-size: 32rpx;
+    color: #B2B2B2;
+    line-height: 48rpx;
+  }
+  .shop-content{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .shop-content image{
+    margin-top: 160rpx;
+    width: 400rpx;
+    height: 300rpx;
+    object-fit: cover;
+  }
+  .shop-content text{
+    margin-top: 22rpx;
+    font-size: 32rpx;
+    color: #B2B2B2;
+    line-height: 32rpx;
+  }
+</style>
+<template>
+  <view class="shop">
+    <view class="shop-header">
+      <view class="gold"><text></text>{{userInfo.integralTotal}}</view>
+      <!-- <text>什么是牛币？</text> -->
+    </view>
+    <view class="shop-content">
+      <image src="https://s.kcimg.cn/wechat/vanca/empty.png"></image>
+      <text>商城功能即将上线，敬请期待~</text>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins/index'
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '牛币商城',
+    enablePullDownRefresh: false
+  }
+  mixins = [mixin]
+  components = {}
+
+  data = {
+    openid: '',
+    userInfo: {}
+  }
+
+  computed = {}
+
+  methods = {}
+
+  events = {}
+  // 获取用户所有卡路里总数
+  async getIntegral () {
+    try {
+      let res = await wepy.request(`${this.host}/getSignTotal?openid=${this.openid}`)
+      let {status, data} = res.data
+      if (!status) {
+        this.userInfo = data
+        this.$apply()
+      }
+    } catch (error) {
+    }
+  }
+  async onLoad() {
+    this.openid = await this.getOpenid()
+    this.getIntegral()
+  }
+}
+</script>

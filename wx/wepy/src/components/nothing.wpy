@@ -1,0 +1,44 @@
+<template>
+  <view class="nothing">
+    <image src="https://s.kcimg.cn/wechat/vanca/nothing.png"></image>
+    <text>暂时还没有评论消息~</text>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+
+export default class Index extends wepy.component {
+  props = {
+  }
+  data = {
+
+  }
+  mixins = [mixin]
+  methods = {
+  }
+  onLoad() {
+  }
+}
+</script>
+
+<style lang="less" scoped>
+  .nothing{
+    padding-top: 62px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    image{
+      width: 100px;
+      height: 114px;
+      margin: 0 auto;
+    }
+    text{
+      font-size: 14px;
+      color: #888888;
+      text-align: center;
+    }
+  }
+</style>

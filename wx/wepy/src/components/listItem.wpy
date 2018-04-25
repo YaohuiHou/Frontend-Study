@@ -1,0 +1,212 @@
+<style lang="less" scoped>
+  .item {
+    padding-top: 12px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 15px;
+    position: relative;
+    background-color: #fff;
+    &:after{
+      content: " ";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      border-bottom: 1px solid rgba(23,24,26,.12);
+      color: rgba(23,24,26,.12);
+      -webkit-transform-origin: 0 100%;
+      transform-origin: 0 100%;
+      -webkit-transform: scaleY(0.5);
+      transform: scaleY(0.5);
+    }
+    .header{
+      height: 32px;
+      display: flex;
+      .avatar{
+        width: 32px;
+        height: 32px;
+        border-radius: 50%
+      }
+      .user-info{
+        margin-left: 8px;
+        display:flex;
+        justify-content:space-between;
+        flex-direction:column;
+        height: 100%;
+        flex:1;
+      }
+      .nickname{
+        font-size: 14px;
+        line-height: 18px;
+        margin-bottom: 3px;
+        color: #576B95;
+      }
+      .date{
+        display: flex;
+      }
+      .date-text{
+        font-size: 10px;
+        color: #B2B2B2;
+      }
+    }
+  }
+  .item-content{
+    padding-top: 12px;
+    display: flex;
+    .content-text{
+      flex: 1;
+      .Label{
+        border-radius: 2px;
+        font-size: 12px;
+        color: #FFFFFF;
+        text-align: center;
+        line-height: 16px;
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        vertical-align: middle;
+        &.ask{
+          background: #FF9300;
+        }
+        &.word{
+          background: #FF5F5F;
+        }
+        &.answer{
+          background: #0ABB6D;
+        }
+      }
+      .title{
+        font-size: 18px;
+        line-height: 24px;
+        height: 48px;
+        overflow: hidden;
+        color: #333;
+        word-break: break-all;
+        display: -webkit-box;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .only-title{
+        max-height: 48px;
+        font-size: 18px;
+        line-height: 24px;
+        overflow: hidden;
+        color: #333;
+        word-break: break-all;
+        display: -webkit-box;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .total{
+        margin-top: 16px;
+        font-size: 12px;
+        line-height: 12px;
+        color: #888
+      }
+    }
+    .figure{
+      margin-left: 8px;
+      margin-top: 4px;
+      width: 112px;
+      height: 75px;
+      overflow: hidden
+    }
+    .figure-img{
+      max-width: 112px;
+    }
+  }
+  .delete{
+    float: right;
+    font-size: 14px;
+    color: #888;
+  }
+</style>
+<template>
+  <view class="item" @tap="toDetail">
+    <view class="header">
+      <image src="https://s.kcimg.cn/wechat/vanca/truck_log.png" class="avatar" lazy-load="true" wx:if="{{ item.type==='article'}}"></image>
+      <image src="{{item.avatar ? item.avatar : headimgurl}}" class="avatar" lazy-load="true" wx:else></image>
+      <view class="user-info">
+        <view class="nickname">{{item.nickname?item.nickname:'火星卡友'}}</view>
+        <view class="date">
+          <view class="date-text">{{item.date?item.date:item.uptime}}</view>
+          <view class="date-text" wx:if="{{ item.label }}"> · 来自于平台推荐</view>
+        </view>
+      </view>
+      <view class="delete" @tap.stop="delete" wx:if="{{item.manager}}">删除</view>
+    </view>
+    <view class="item-content">
+      <view class="content-text">
+        <view class="title" wx:if="{{item.img}}">
+          <text class="Label ask" wx:if="{{item.project && item.project=='che360_tuan_sos'}}">问</text>
+          <text class="Label word" wx:if="{{item.project && item.project=='che360_tuan_threads'}}">话</text>
+          <text class="Label answer" wx:if="{{item.project && item.project=='che360_Tuan'}}">答</text>
+          {{ item.title }}</view>
+        <view class="only-title" wx:if="{{!item.img}}">
+          <text class="Label ask" wx:if="{{item.project && item.project=='che360_tuan_sos'}}">问</text>
+          <text class="Label word" wx:if="{{item.project && item.project=='che360_tuan_threads'}}">话</text>
+          <text class="Label answer" wx:if="{{item.project && item.project=='che360_Tuan'}}">答</text>
+          {{ item.title }}
+        </view>
+        <view class="total" wx:if="{{item.project!='che360_tuan_threads'&&item.project!='che360_tuan_sos'}}">{{ !item.label ? item.total + ' 回帖' :item.label }}</view>
+        <view class="total" wx:if="{{item.project=='che360_tuan_threads'}}">{{ item.subPostTotal + ' 参与'}}</view>
+        <view class="total" wx:if="{{item.project=='che360_tuan_sos'}}">{{ item.subPostTotal + ' 帮助 '}}</view>
+      </view>
+      <view wx:if="{{item.img}}" class="figure">
+        <image mode="widthFix" @error="showErrorImage" lazy-load="true" src="{{ item.img }}" class="figure-img"></image>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+export default class Index extends wepy.component {
+  props = {
+    item: {},
+    index: String
+  }
+  data = {
+    headimgurl: 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+  }
+  mixins = [mixin]
+  methods = {
+    showErrorImage() {
+      this.item['img'] = ''
+      this.$apply()
+    },
+    toDetail() {
+      if (this.item.type === 'article') {
+        wepy.navigateTo({
+          url: `/pages/articleDetail?id=${this.item.id}`
+        })
+      } else {
+        if (this.item.project && this.item.project !== 'che360_Tuan') {
+          wepy.navigateTo({
+            url: `/pages/topicDetails?id=${this.item.id}&project=${this.item.project}`
+          })
+        } else {
+          wepy.navigateTo({
+            url: `/pages/postDetail?id=${this.item.id}`
+          })
+        }
+      }
+    },
+    userLink() {
+      if (this.item.type === 'poster') {
+        this.toUserPage(this.item.openid)
+      } else {
+        wepy.navigateTo({
+          url: `articleDetail?id=${this.item.id}`
+        })
+      }
+    },
+    delete() {
+      this.$emit('delete', this.index, this.item.id)
+    }
+  }
+}
+</script>

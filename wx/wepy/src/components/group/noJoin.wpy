@@ -1,0 +1,168 @@
+<style lang="less" scoped>
+  .nojoin-container{
+    background-image: linear-gradient(0deg, #FFC551 0%, #FF9400 100%);
+    height: 100%;
+    overflow: auto;
+    padding: 0 16rpx;
+    box-sizing: border-box;
+  }
+  .logo{
+    width: 100%;
+    height: 97px;
+  }
+  .award{
+    .main{
+      margin-top: 40rpx;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .list{
+      flex:1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      image{
+        width: 75px;
+        height: 60px;
+      }
+      text{
+        font-size: 28rpx;
+        color: #7D4900;
+        line-height: 60rpx;
+        font-weight: bold;
+      }
+    }
+    .des{
+      font-size: 28rpx;
+      line-height: 28rpx;
+      padding: 32rpx 0 0;
+      color: #FF9400;
+      text-align: center;
+    }
+    .to-join{
+      width: 560rpx;
+      height: 88rpx;
+      background-image: linear-gradient(44deg, #FD7B1E 0%, #FFB200 100%);
+      box-shadow: 0 4rpx 24rpx 0 rgba(251,156,51,0.40);
+      border-radius: 200rpx;
+      font-size: 36rpx;
+      color: #FFFFFF;
+    }
+  }
+  .recommend-group{
+    padding: 48rpx 0 0;
+    margin: 20rpx 0;
+    min-height: 100rpx;
+    background: #FFFFFF;
+    box-shadow: 0 3px 0 0 #FEBE03, 0 4px 12px 0 #E07400;
+    border-radius: 4px 4px 0 0 0 0 0 0 0 0 0 4px 0 0 0 0 0 0 4px 0 0 0 0 0 0 0 0 0;
+    .list{
+      background: #FFFFFF;
+      box-shadow: 0 2px 12px 0 rgba(255,148,0,0.20);
+      border-radius: 4px;
+      padding: 15px 16px;
+      margin-top: 32rpx;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .logo{
+        width: 100rpx;
+        height: 100rpx;
+        border-radius: 50%;
+        margin-right: 24rpx;
+      }
+      .main{
+        flex:1;
+        display: flex;
+        height: 100rpx;
+        flex-direction: column;
+        justify-content: space-between;
+        font-size: 28rpx;
+        color: #888888;
+        line-height: 30rpx;
+        .name{
+          font-size: 36rpx;
+          color: #353535;
+          line-height: 40rpx;
+          overflow: hidden;
+        }
+      }
+      .to-look{
+        display: block;
+        border: 1px solid #FF9400;
+        border-radius: 200rpx;
+        font-size: 28rpx;
+        color: #FF9400;
+        width: 128rpx;
+        height: 56rpx;
+        text-align: center;
+        line-height: 56rpx;
+        background-color: #fff;
+      }
+    }
+  }
+  .main-wraper{
+    .load-end{
+      font-size: 28rpx;
+      color: #888888;
+      line-height: 28rpx;
+      padding-top: 26rpx;
+      text-align: center;
+      width: 100%;
+    }
+  }
+</style>
+<template>
+<view class="nojoin-container">
+  <image src="https://s.kcimg.cn/wechat/vanca/truck-logo.png" class="logo"></image>
+  <view class="award group-card">
+    <view class="title">加入成功后可获得以下奖励</view>
+    <view class="main">
+      <view class="list">
+        <image src="https://s.kcimg.cn/wechat/vanca/interaction.png"></image>
+        <text>团内互动</text>
+      </view>
+      <view class="list">
+        <image src="https://s.kcimg.cn/wechat/vanca/coin.png"></image>
+        <text>牛币奖励</text>
+      </view>
+      <view class="list">
+        <image src="https://s.kcimg.cn/wechat/vanca/more-reward.png"></image>
+        <text>更多奖励</text>
+      </view>
+    </view>
+    <view class="des">已有 {{total}}人 加入</view>
+    <!-- <button bindtap="default" hover-class="none" class="to-join">立即申请</button> -->
+  </view>
+
+  <view class="recommend-group group-card">
+    <view class="title">推荐小组</view>
+    <scroll-view class="main-wraper">
+      <groupListNo :group.sync="group"></groupListNo>
+      <view class="load-end" wx:if="{{group.length && group.length>20}}">{{end ? '已经到底啦': '正在加载中...'}}</view>
+     </scroll-view>
+  </view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import groupListNo from './group-list-no'
+export default class Index extends wepy.component {
+  components = {
+    groupListNo: groupListNo
+  }
+  props = {
+    group: Array,
+    total: Number,
+    end: Boolean
+  }
+  data = {}
+  events = {}
+  computed = {}
+  methods = {}
+  onLoad() {}
+}
+</script>

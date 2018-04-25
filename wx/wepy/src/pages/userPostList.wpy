@@ -1,0 +1,104 @@
+<style lang="less">
+  .container{
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .load-end{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 28rpx;
+    padding: 26rpx 0;
+    text-align: center;
+    background: #F3F4F5;
+    width: 100%;
+  }
+</style>
+<template>
+  <view class="container">
+    <loadPage wx:if="{{!loadingStatus}}"></loadPage>
+    <view style="background:#fff" wx:if="{{loadingStatus && post.length}}">
+      <repeat for="{{post}}" key="index" index="index">
+        <listItem :item="item"></listItem>
+      </repeat>
+    </view>
+    <dataEmpty wx:if="{{loadingStatus && !post.length}}" msg="暂未发帖" jump=""></dataEmpty>
+    <view class="load-end" wx:if="{{post.length}}">{{loading ? '已经到底啦': '正在加载中...'}}</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import mixin from '../mixins'
+  import listItem from '../components/user/listItem'
+  import dataEmpty from '../components/public/dataEmpty'
+  import loadPage from '../components/public/loadPage'
+  export default class Index extends wepy.page {
+    mixins = [mixin]
+  
+    config = {
+      navigationBarTitleText: ''
+    }
+    components = {
+      listItem: listItem,
+      dataEmpty: dataEmpty,
+      loadPage: loadPage
+    }
+
+    data = {
+      loadingStatus: false,
+      uid: 0,
+      page: 0,
+      loading: 0,
+      post: []
+    }
+    onReachBottom (e) {
+      this.getData()
+    }
+    computed = {
+    }
+
+    methods = {
+    }
+    getData () {
+      if (this.loading) {
+        return false
+      }
+      this.loading = 1
+      wepy.request({
+        url: `${this.host}/getProfile`,
+        data: {
+          openid: this.uid,
+          page: this.page
+        }
+      }).then(res => {
+        let {status, postersList, nextPageToken} = res.data
+        if (!status) {
+          this.loading = 0
+          if (postersList.length) {
+            this.post = this.post.concat(postersList)
+            this.page = nextPageToken
+            this.loadingStatus = true
+          }
+          if (!nextPageToken || postersList.length < 20) {
+            this.loading = 1
+            this.loadingStatus = true
+          }
+          this.$apply()
+        }
+      })
+    }
+    onLoad(option) {
+      if (option.isOther) {
+        wepy.setNavigationBarTitle({
+          title: '他的发帖'
+        })
+      } else {
+        wepy.setNavigationBarTitle({
+          title: '我的发帖'
+        })
+      }
+      this.uid = option.uid
+      this.getData()
+    }
+  }
+</script>

@@ -1,0 +1,365 @@
+<template>
+  <view class="answer">
+    <view class="title">
+      <text>被赞总数排名，每周一24:00更新</text>
+    </view>
+    <!-- 榜单 -->
+    <view wx:for="{{ answerlist }}" wx:key="{{ index }}" class="gooditem gooditem{{ index }}">
+      <view class="num">{{item.num}}</view>
+      <text class="title">{{ item.title }}</text>
+      <view class="info">
+        <image src="{{ item.user.img }}"></image>
+        <text>{{ item.user.nackname }}</text>
+      </view>
+      <view class="some">
+        <view class="icon icon1">问</view>
+        <text class="content">{{ item.user.answer }}</text>
+      </view>
+      <view class="praise">
+        <view class="sum">
+          <text>获得{{ item.zanlist.zans }}人点赞</text>
+          <view class="zan">
+            <view style="width:{{ item.zanlist.zans/item.zanlist.zansum*100 }}%"></view>
+          </view>
+        </view>
+        <view class="imglist">
+          <image wx:for="{{ item.zanlist.zanuser }}" wx:for-item="imgItem" src="{{ imgItem.img }}">{{imgItem.user}}</image>
+        </view>
+      </view>
+    </view>
+
+    <netError wx:if="{{errorStatus}}" text=''></netError>
+  </view>
+</template>
+
+<style lang="less" scoped>
+  .answer{
+    background: #fff;
+    padding: 0 16px;
+    .title{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 0;
+      text{
+        font-size: 14px;
+        color: #888;
+        line-height: 22px;
+        position: relative;
+        &:before,&:after{
+          content: "";
+          position: absolute;
+          top: 10px;
+          width: 16px;
+          height: 1px;
+          background: #888;
+        }
+        &:before{
+          left: -24px;
+        }
+        &:after{
+          right: -24px;
+        }
+      }
+    }
+    .gooditem{
+      position: relative;
+      padding: 16px;
+      box-sizing: border-box;
+      border: 2px solid;
+      box-shadow: 0 2px 12px 0 rgba(178,178,178,0.20);
+      border-radius: 4px;
+      margin-bottom: 16px;
+      .title{
+        font-size: 22px;
+        color: #17181A;
+        line-height: 34px;
+        text-indent: 48px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .info{
+        padding-left: 4px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        margin-left: 8px;
+        image{
+          width: 16px;
+          height: 16px;
+        }
+        text{
+          margin-left: 8px;
+          font-size: 14px;
+          color: #576B95;
+          line-height: 16px;
+        }
+      }
+      .some{
+        display: flex;
+        flex-direction: row;
+        padding-bottom: 12px;
+        padding-left: 4px;
+        margin-left: 8px;
+        .icon{
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          border-radius: 2px;
+          margin-top: 4px;
+          font-size: 0;
+          &1{
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAwCAMAAACyjAPtAAAAh1BMVEUAAAD/X1//YGD/YGD/YGD/Zmb/X1//////8PD/2Nj/jY3/wsL/jIz/fn7/zs7/x8f/vLz/p6f/e3v/cnL/ZGT/np7/6ur/09P/ra3/+fn/4+P/uLj/bGz/wcH/tbX/sbH/aWn/8fH/y8v/qqr/kpL/iYn/dnb/8/P/3d3/29v/pKT/lZX/hoa1U4APAAAABnRSTlMA88i9ZRljrLGUAAABMUlEQVRIx9XW2XKCMBiGYUD9P7AVFJBVFtlc7//6GsoEtKWQzDid8T3KZJ6DLAeJwlpqKs2lakulbbUgsRYrphkW5WwZJN5S0SS0pqgSWlVIpv/RrhmMCrdOo+yXtoDCfXbO/ZqcQwCh81M3HhC1s068TazCj07gGeWgebkPeGzaDTGkm1mVj+8y7nhs+FYSZ2UKlFNnkgI+9dnAbkpT7DkSmg4ko+n1erPvag9Q5x2BEx9bjzpA1yfTGMv/S3/wCuDMx7tH7R5YNdPiu9y8vc62bRZw2X5nT2odz61n9NHoi+a1RX3r1+l6L6FvoSmur4AurA3A24jpO1h+TmI6AZAKn7eB8CZ+l5VnE9e62XcZ18SWLH47Q7ugor4mCBqupV4puRdQ7nWVerklfwVyP44vfDNAVxSop6kAAAAASUVORK5CYII=) no-repeat;            
+            background-size: 100%;
+          }
+          &2{
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAwCAMAAACyjAPtAAAAn1BMVEUAAAAKvG0Ku24LvG0KvW8KwnAKu23////G7938/v2U4b/Q8uNz2Kvx+/bY9Ohp1aW67NaW4sAkw332/Pmg5ccdwHjj9+5s1qdSz5jo+fK269Sd5MQtxYITvnOH3rhEy5A6yYorxIEXv3UPvXD5/fvy+/fu+vWu6M6O4Lxm1KNd0p5LzZQ1x4bM8eDB7dq+7diq58ym5sqA3LNx2KtW0Js2Hz/oAAAABnRSTlMA88i9ZRljrLGUAAABjUlEQVRIx9WW2XKCQBBF0Zi+DAHEYRMB933f/v/bMqJGHBWdxJecl+EWh6KZaqpHE1TKJXpGqVzRDnx+0Gt8fApbkot0UQa9TkUrK9hlraRglzRS4fd23Qu7ubg3pr0CW8cgzcUFogK7DXh0FY2CSjygVj0xzeK4emYi276LCwF18hED2fYAxhgAJghIz0c2lOw6sBSLgT4/RPP4EXsgvFO3H8HtiJX3ER8WF0H3uE9RemuPADO7iMESsUyDWRZbQPPG7q2hU0YnihNKms3kJDRgZS+R6k7oh50LDE71znd+YZ/wFfBlAw5/oasmFjBK0xpgTZ7ZfgNg26y0CGjwItvfDgG7dXlwaHYf2dxwATa+NF4osjXm9+z5mkGg13I4EPQ3bdmeZTcWBiTiJQSr+tm+NGCjRS1bok7tEQMwy9vUZJs5PaATu851JSmnAnz+13+evK87eI9sHXfQH9uBIREU2Q5JOP/Dtk0JG/q7dpBZEuxddZtGKNuhYeaS2pRSm4Bq01VpciueCtROHN8kl0TZLugmGwAAAABJRU5ErkJggg==) no-repeat;
+            background-size: 100%;
+          }
+          &3{
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAwCAMAAACyjAPtAAAAaVBMVEUAAAD/lAD/lAD/kwD/lQD/mQD/kwD/////1Z3/qDL/rkD/tVL/v2j/zo3/sUj/qzn/mxP//Pn/lwz/16H/vGL/pCn/wnD/u17/nhr/9+3/9ej/8uH/37T/oSP/5cL/0pX/0JH/zIj/uFmFBixBAAAABnRSTlMA88i9ZRljrLGUAAAA3UlEQVRIx+3WSQ+CMBCG4YI4H1Rc2JHF7f//SFsuAmnCjJrIwfdAL89hEgJTZQp8j5by/EDZthvitdkabTCXmzGIX6B8gfaVJ9CeIkkf6OKe8nUF3PiaLoAm225W5NJ1g3aYJcG00KVJAxlfUwbszBFNcmhdluZ5OqNJaZZDh4A94i4itratRfd6VL2k9xgVf10fjkMxT59o6PjX72odDVVG//LNF4dR9bq+nVSkNXBl66IDSpZukSQAkp6lQ9jOD5rrPMscU+R5XunXr062pWQbULZdRZtbeCuQ3TieBaM41ckFwzEAAAAASUVORK5CYII=) no-repeat;
+            background-size: 100%;
+          }
+        }
+        .content{
+          width: calc(~'100% - 24px');
+          font-size: 14px;
+          color: #888888;
+          line-height: 22px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          margin-left: 8px;
+        }
+      }
+      .praise{
+        height: 32px;
+        padding-top: 16px;
+        border-top: 1px dotted rgba(178,178,178,0.40); 
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        .sum{
+          display: flex;
+          flex-direction: column;
+          text{
+            font-size: 16px;
+            color: #353535;
+            line-height: 16px;
+            margin-bottom: 8px;
+          }
+          .zan{
+            width: 150px;
+            height: 8px;
+            background: rgba(178,178,178,0.24);
+            border-radius: 100px;
+            overflow: hidden;
+            view{
+              background-image: linear-gradient(45deg, #FFB200 0%,#FD7B1E 100%);
+              border-radius: 100px;
+              height: 8px;
+            }
+          }
+        }
+        .imglist{
+          position: relative;
+          height: 32px;
+          width: auto;
+          image{
+            position: absolute;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            border: 1px solid #FFFFFF;
+            box-sizing: border-box;
+            &:nth-of-type(1){
+              right: 0;
+              z-index: 5;
+            }
+            &:nth-of-type(2){
+              right: 20px;
+              z-index: 4;
+            }
+            &:nth-of-type(3){
+              right: 40px;
+              z-index: 3;
+            }
+            &:nth-of-type(4){
+              right: 60px;
+              z-index: 2;
+            }
+            &:nth-of-type(5){
+              right: 80px;
+              z-index: 1;
+            }
+          }
+        }
+      }
+      .num{
+        position: absolute;
+        left: -2px;
+        top: -2px;
+        width: 70px;
+        height: 70px;
+        box-sizing: border-box;
+        padding: 8px 0 0 5px;
+        font-size: 0;
+        &:before{
+          font-family: 'vanca';
+          font-size: 26px;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-transform: uppercase;
+        }
+      }
+      &0{
+        border-color: #FFD83A;
+        .num{
+          background: linear-gradient(-45deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,#FFD83A 50.01%,#FFD83A 100%);
+          &:before{
+            content: "\e7c2";
+            color: #FFD83A;
+            background-image: linear-gradient(-180deg, #FFFEF0 0%, #FEF8CB 80%);
+          }
+        }
+      }
+      &1{
+        border-color: #60DF96;
+        .num{
+          background: linear-gradient(-45deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,#60DF96 50.01%,#60DF96 100%);
+          &:before{
+            content: "\e7be";
+            color: #60DF96;
+            background-image: linear-gradient(-180deg, #FFFEF0 0%, #D4FECB 80%);
+          }
+        }
+      }
+      &2{
+        border-color: #84ADFF;
+        .num{
+          background: linear-gradient(-45deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,#84ADFF 50.01%,#84ADFF 100%);
+          &:before{
+            content: "\e7c0";
+            color: #84ADFF;
+            background-image: linear-gradient(-180deg, #FFFEF0 0%, #CBD9FE 80%);
+          }
+        }
+      }
+      .title{
+
+      }
+    }
+  }
+</style>
+
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+import netError from '../components/public/netError'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '好回答周榜',
+    backgroundColorTop: '#FF9400',
+    enablePullDownRefresh: false
+  }
+  components = {
+    netError: netError
+  }
+
+  mixins = [mixin]
+
+  data = {
+    answerlists: '我去，啥回事',
+    errorStatus: 0,
+    answerlist: [
+      {
+        num: 1,
+        title: '电瓶没电打不着怎么办？',
+        user: {
+          nackname: '用户昵称',
+          img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png',
+          answer: '车辆在长期停放时，我们经常会遇到电瓶没电导致启动困难的情况，尤其是你这在外车辆在长期停放时，我们经常会遇到电瓶没电导致启动困难的情况，尤其是你这在外面'
+        },
+        zanlist: {
+          zans: '123',
+          zansum: '231',
+          zanuser: [
+            {
+              user: '点赞用户1',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            },
+            {
+              user: '点赞用户2',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            },
+            {
+              user: '点赞用户1',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            },
+            {
+              user: '点赞用户2',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            }, {
+              user: '点赞用户1',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            }
+          ]
+        }
+      },
+      {
+        num: 2,
+        title: '电瓶没电打不着怎么sdfa安达市多办？',
+        user: {
+          nackname: '用户昵称',
+          img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png',
+          answer: '车辆在长期停放时，我们经常会遇到电瓶没电导致启动困难的情况，尤其是你这在外车辆在长期停放时，我们经常会遇到电瓶没电导致启动困难的情况，尤其是你这在外面'
+        },
+        zanlist: {
+          zans: '206',
+          zansum: '567',
+          zanuser: [
+            {
+              user: '点赞用户1',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            }
+          ]
+        }
+      },
+      {
+        num: 3,
+        title: '电瓶没电打不着怎么办？',
+        user: {
+          nackname: '用户昵称',
+          img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png',
+          answer: '车辆在长期停放时，我们经常会遇到电瓶没电导致启动困难的情况，尤其是你这在外车辆在长期停放时，我们经常会遇到电瓶没电导致启动困难的情况，尤其是你这在外面'
+        },
+        zanlist: {
+          zans: '45',
+          zansum: '231',
+          zanuser: [
+            {
+              user: '点赞用户1',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            },
+            {
+              user: '点赞用户2',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            },
+            {
+              user: '点赞用户1',
+              img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+            }
+          ]
+        }
+      }
+    ]
+  }
+  methods = {
+  }
+}
+</script>

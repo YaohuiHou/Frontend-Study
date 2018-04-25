@@ -1,0 +1,167 @@
+<style lang="less">
+.container{
+  padding-bottom: 100rpx;
+  box-sizing: border-box;
+}
+.comments{
+  padding: 0rpx 32rpx;
+  box-sizing: border-box;
+  .title{
+    display:block;
+    padding-top: 24rpx;
+    font-size: 36rpx;
+    color: #17181A;
+    font-weight: bold;
+    line-height: 60rpx;
+  }
+}
+.to-post{
+  position: fixed;
+  height: 100rpx;
+  left: 0;
+  bottom: 0;
+  right:0;
+  padding: 14rpx 16rpx;
+  box-sizing: border-box;
+  background: #fff;
+  text{
+    background: rgba(178,178,178,0.10);
+    border: 0 solid rgba(53,53,53,0.10);
+    border-radius: 8rpx;
+    font-size: 32rpx;
+    padding: 12rpx 24rpx;
+    color: #888888;
+    line-height: 48rpx;
+    display: block;
+    box-sizing: border-box;
+  }
+}
+.load-end{
+  font-size: 28rpx;
+  color: #888888;
+  line-height: 28rpx;
+  padding: 26rpx 0;
+  text-align: center;
+  background: #F3F4F5;
+  width: 100%;
+}
+</style>
+<template>
+<view>
+  <loadPage wx:if="{{!comments.length}}"></loadPage>
+  <view class="container" wx:if="{{comments.length}}">
+    <header :floor.sync="floor" :pid.sync="id"></header>
+    <view class="comments">
+      <text class="title">评论</text>
+      <repeat for="{{comments}}" key="index" index="index">
+        <list :list="item"></list>
+      </repeat>
+    </view>
+    <view class="load-end">{{loading ? '已经到底啦': '正在加载中...'}}</view>
+  </view>
+  <navigator class="to-post" url="toReplay?id={{id}}&commentId={{commentId}}&originUid={{floor.openid}}">
+    <text>发表评论...</text>
+  </navigator>
+</view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import mixin from '../mixins'
+  import Header from '../components/replyFloor/header'
+  import List from '../components/replyFloor/list'
+  import loadPage from '../components/public/loadPage'
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '帖子楼中楼'
+    }
+    components = {
+      header: Header,
+      list: List,
+      loadPage: loadPage
+    }
+    mixins = [mixin]
+
+    data = {
+      id: '',
+      pages: 0,
+      loading: false,
+      commentId: '',
+      floor: {},
+      comments: []
+    }
+
+    computed = {
+    }
+    events = {
+      'eventDeleteComment': async (commentId, uid, $event) => {
+        let res = await this.deleteComment({
+          adminUid: this.openid,
+          commentId,
+          uid
+        })
+        wepy.showToast({
+          title: res.message,
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    }
+    // 获取楼层回复列表
+    async getFloorCommentData () {
+      if (this.loading) return
+      let res = await wepy.request({
+        url: `${this.host}/getSingleComment`,
+        data: {
+          cid: this.commentId,
+          page: this.pages,
+          openid: this.openid
+        }
+      })
+      let { status, data } = res.data
+      if (!status) {
+        this.loading = false
+        if (!this.pages) {
+          this.floor = data
+          wepy.setNavigationBarTitle({
+            title: data.content
+          })
+        }
+        this.comments = this.comments.concat(data.replies)
+        this.pages = data.nextPageToken
+        if (this.comments.length) {
+          this.updateReadState(data.commentId, this.comments[0].lastTime)
+        }
+        if (!data.nextPageToken || data.replies.length < 50) {
+          this.loading = true
+        }
+        this.$apply()
+      }
+    }
+    methods = {
+    }
+    onShow(option) {
+      try {
+        let reply = wepy.getStorageSync('reply')
+        if (reply) {
+          this.loading = false
+          this.pages = 0
+          this.comments = []
+          this.getFloorCommentData()
+          wepy.removeStorageSync('reply')
+        }
+      } catch (error) {
+      }
+    }
+    onReachBottom (e) {
+      this.getFloorCommentData()
+    }
+    async onLoad(option) {
+      this.id = option.id
+      this.commentId = option.commentId
+      this.openid = await this.getOpenid()
+      this.getFloorCommentData()
+      this.$apply()
+    }
+  }
+</script>

@@ -1,0 +1,486 @@
+<style lang="less">
+  .container{
+    padding: 0 0 100rpx;
+    &.ipx{
+      padding: 0 0 180rpx;
+    }
+  }
+  .main{
+    padding: 0 32rpx;
+    box-sizing: border-box;
+    background: #fff;
+  }
+  .post-title{
+    color: #17181A;
+    letter-spacing: 0.23px;
+    line-height: 56rpx;
+    font-size: 48rpx;
+    margin: 24rpx auto 16rpx;
+    font-weight: bold;
+    word-break:break-all;
+    text-align: justify;
+  }
+  .detail{
+    font-size: 0;
+    .message{
+      font-size: 36rpx;
+      color: #353535;
+      line-height:1.8;
+      word-break:break-all;
+      text-align: justify;
+    }
+    .img{
+      display: block;
+      width: 100%;
+      margin:24rpx auto 0;
+    }
+  }
+  .detail-footer{
+    padding:48rpx 0;
+    display: flex;
+    .btn{
+      flex:1;
+      align-items: center;
+      font-size: 28rpx;
+      color: #888888;
+      text-align: center;
+      line-height: 28rpx;
+      color: #B2B2B2;
+      &:before{
+        font-family: 'vanca';
+        content: "\e77b";
+        font-size: 40rpx;
+        width: 100rpx;
+        border-radius: 50%;
+        display: block;
+        margin: 0 auto 16rpx;
+        height: 100rpx;
+        text-align: center;
+        line-height: 100rpx;
+        border: 1px solid  #B2B2B2;
+        color:  #B2B2B2;
+      }
+    }
+    .liked{
+      color: rgba(255,148,0,1);
+    }
+    .liked:before{
+      color: rgba(255,148,0,1);
+      border: 1px solid rgba(255,148,0,1);
+    }
+    .discuss{
+      color: rgba(255,148,0,1);
+    }
+    .discuss:before{
+      content: '\e78b';
+      color: rgba(255,148,0,1);
+      border: 1px solid rgba(255,148,0,1);
+    }
+    .share{
+      border:none;
+      padding: 0;
+      color:  #09BB07;
+      &:before{
+        border: 1px solid #09BB07;
+        content: '\e7c5';
+        color:  #09BB07;
+      }
+    }
+  }
+  .comment-header{
+    margin-top: 16rpx;
+    font-size: 36rpx;
+    color: #17181A;
+    line-height: 60rpx;
+    padding:24rpx 0 4rpx;
+    font-weight: bold;
+    position: relative;
+    &:before{
+      content:'';
+      height: 16rpx;
+      background: #f3f4f5;
+      left:-32rpx;
+      right:-32rpx;
+      position:absolute;
+      top:-16rpx;
+    }
+  }
+  .fix-footer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100rpx;
+    padding: 14rpx 16rpx;
+    box-sizing: border-box;
+    background: rgba(178,178,178,0.12);
+    display: flex;
+    flex-direction: row;
+    background: #fff;
+    z-index: 10;
+    &.ipx{
+      padding-bottom: 80rpx;
+      height: 180rpx;
+    }
+    .to-post{
+      background: rgba(178,178,178,0.1);
+      border: 1rpx solid rgba(53,53,53,0.10);
+      border-radius: 8rpx;
+      height: 72rpx;
+      font-size: 32rpx;
+      padding-left: 24rpx;
+      box-sizing: border-box;
+      color: #888888;
+      line-height: 72rpx;
+      flex:1;
+    }
+    .like,.share{
+      width: 120rpx;
+      font-family: 'vanca';
+      font-size: 32rpx;
+      padding: 0;
+      border: none;
+      justify-content:center;
+      align-items:center;
+      display:flex;
+      color: #B2B2B2;
+      &:before{
+        content: '\e777';
+        margin-right: 10rpx;
+      }
+    }
+    .like{
+      margin-left: 16rpx;
+      color: #FF9400;
+    }
+    .liked{
+      color: #B2B2B2;
+    }
+    .share:before{
+      content: '\e780';
+    }
+  }
+  .load-end{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 28rpx;
+    padding: 26rpx 0;
+    text-align: center;
+    background: #F3F4F5;
+    width: 100%;
+  }
+</style>
+<template>
+<view>
+  <netError wx:if="{{errorStatus}}" text="返回上一页"></netError>
+  <view wx:if="{{!errorStatus}}" class="container {{isIpx?'ipx':''}}">
+    <postSkeleton wx:if="{{!datanull && !postTop.title}}"></postSkeleton>
+    <view class="main" wx:if="{{postTop.title}}">
+      <!-- 头部 -->
+      <top :postheader.sync="postTop"></top>
+      <!-- 头部end -->
+      <!-- 标题 -->
+      <view class="post-title">
+        <text>{{postTop.title}}</text>
+      </view>
+      <!-- 标题end -->
+      <!-- 帖子详情页面内容 -->
+      <!-- 从小程序发的帖子样式 -->
+      <view class="detail">
+        <text class="message">{{detail.content}}</text>
+        <image src="{{item}}" class="img" mode='widthFix'  wx:for="{{detail.images}}"  wx:key="index" lazy-load="true" ></image>
+      </view>
+      <!-- 帖子详情页面内容 end-->
+      <!-- 帖子底部分享 -->
+      <view class="detail-footer">
+        <view class="btn" wx:if="{{!detail.liked}}" @tap="like">点赞</view>
+        <view class="btn liked" wx:elif @tap="like">已赞</view>
+        <navigator class="btn discuss" hover-class="none" url="toReplay?id={{id}}&originContent={{detail.content}}&originUid={{detail.editorid}}">评论</navigator>
+        <button class="btn share" plain open-type="share" hover-class="none">分享</button>
+      </view>
+      <!-- 帖子底部分享 end-->
+      <!-- 帖子回复 -->
+      <view class="comment-wrap">
+        <view class="comment-header">
+          <text>{{total ? total+'条' : ''}}评论</text>
+        </view>
+        <repeat for="{{comments}}" key="index" index="index">
+          <commentList :list="item" :pid="id"></commentList>
+        </repeat>
+        <dataEmpty wx:if="{{!comments.length}}" jump='1' msg="暂无评论"></dataEmpty>
+      </view>
+    </view>
+    <view class="load-end" wx:if="{{comments.length}}">{{end ? '已经到底啦': '正在加载中...'}}</view>
+    <!-- 帖子回复 end-->
+  </view>
+   <view class="fix-footer {{isIpx?'ipx':''}}">
+    <navigator class="to-post" hover-class="none" url="toReplay?id={{id}}&originContent={{detail.content}}&originUid={{detail.editorid}}">发表评论...</navigator>
+    <view class="like {{detail.liked ? '' : 'liked'}}" @tap="like"><text>{{detail.likeTotal ? detail.likeTotal: '点赞'}}</text></view>
+    <button class="share" plain open-type="share">分享</button>
+  </view>
+  <deleteDate jump='' wx:if="{{detail.content==''}}" msg="帖子已删除"></deleteDate>
+  <!-- 返回主页按钮 -->
+  <goBack></goBack>
+  <workSuccess wx:if="{{taskStatus.rulename}}" :taskObject.sync="taskStatus"></workSuccess>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+import Top from '../components/postDetail/top'
+import CommentList from '../components/postDetail/comment-list'
+import dataEmpty from '../components/public/dataEmpty'
+import postSkeleton from '../components/public/postSkeleton'
+import netError from '../components/public/netError'
+import goBack from '@/components/public/goBack'
+import workSuccess from '../components/public/workSuccess'
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '',
+    enablePullDownRefresh: true,
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTextStyle: 'black'
+  }
+  components = {
+    top: Top,
+    commentList: CommentList,
+    dataEmpty: dataEmpty,
+    deleteDate: dataEmpty,
+    postSkeleton: postSkeleton,
+    netError: netError,
+    goBack,
+    workSuccess
+  }
+
+  mixins = [mixin]
+
+  data = {
+    taskStatus: {}, // 发帖任务是否完成
+    postTaskStatus: {}, // 具体对象内容
+    errorStatus: 0,
+    project: '', // 求助的project
+    page: 0,
+    isIpx: false, // 判断是否为ipx
+    datanull: false, // 数据是否为空
+    height: 500,
+    loading: false,
+    end: false,
+    openid: '', // 用户openid
+    id: '', // 帖子id
+    postTop: {
+      date: '',
+      writer: {
+        avatar: '',
+        nickname: ''
+      },
+      editorid: '',
+      title: ''
+    },
+    detail: {
+      editorid: '',
+      content: '',
+      images: [],
+      liked: 0,
+      likeTotal: 0
+    },
+    total: 0, // 所有评论数,
+    comments: []
+  }
+
+  computed = {}
+  events = {
+    refresh: $event => {
+      wepy.navigateBack({
+        delta: 1
+      })
+    },
+    closeWorkSuccess: $event => {
+      this.taskStatus = {}
+    },
+    eventDeleteComment: async (commentId, uid, $event) => {
+      let res = await this.deleteComment({
+        adminUid: this.openid,
+        commentId,
+        uid
+      })
+      wepy.showToast({
+        title: res.message,
+        icon: 'none',
+        duration: 2000
+      })
+      this.onPullDownRefresh()
+    }
+  }
+  onShareAppMessage(res) {
+    // 分享
+    if (res.from === 'button') {
+    }
+    return {
+      title: this.postTop.title,
+      path: `/pages/postDetail?id=${this.id}`,
+      success: async res => {
+        this.taskStatus = await this.finishTask(this.postTaskStatus, this.openid)
+        this.$apply()
+      },
+      fail: res => {
+        // 转发失败
+      }
+    }
+  }
+  getIphoneX () {
+    wepy.getSystemInfo().then(res => {
+      var name = 'iPhone X'
+      if (res.model.indexOf(name) > -1) {
+        this.isIpx = true
+      }
+    })
+  }
+  methods = {
+    // 点赞
+    like() {
+      if (!this.detail.liked) {
+        let json = {
+          id: this.id,
+          openId: this.openid,
+          authorOpenId: this.detail.editorid,
+          content: this.postTop.title
+        }
+        this.detail.liked = true
+        this.detail.likeTotal++
+        wepy
+          .request({
+            url: `${this.host}/like/addLikeArticle`,
+            data: json
+          })
+          .then(res => {
+            let { status } = res.data
+            if (!status) {
+              wepy.showToast({
+                title: '点赞成功',
+                icon: 'none',
+                duration: 2000
+              })
+              this.$apply()
+            } else {
+              wepy.showToast({
+                title: '点赞失败',
+                icon: 'none',
+                duration: 2000
+              })
+            }
+          })
+      } else {
+        wepy.showToast({
+          title: '已经赞过',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    }
+  }
+  // 滚动翻页回复数据
+  onReachBottom(e) {
+    if (!this.loading) {
+      this.getCommentData()
+    }
+  }
+  // 获取帖子详情数据
+  async getDate() {
+    try {
+      let json = {
+        pid: this.id,
+        openid: this.openid
+      }
+      if (this.project) {
+        json.project = this.project
+      }
+      let res = await wepy.request({
+        url: `${this.host}/getPosterDetail`,
+        data: json
+      })
+      let { status, data } = res.data
+      if (!status) {
+        this.datanull = true
+        if (data.content) {
+          this.postTop = this.getNewObj(this.postTop, data)
+          let avatar = this.postTop.writer.avatar
+          this.postTop.writer.avatar = avatar || 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+          this.detail = this.getNewObj(this.detail, data)
+          wepy.setNavigationBarTitle({
+            title: this.postTop.title
+          })
+        }
+      }
+      this.errorStatus = 0
+      this.$apply()
+    } catch (error) {
+      this.errorStatus = 1
+    }
+  }
+  // 获取回复列表
+  async getCommentData(option) {
+    this.loading = true
+    let res = await wepy.request({
+      url: `${this.host}/getCommentsList`,
+      data: {
+        pid: this.id,
+        page: this.page,
+        openid: this.openid
+      }
+    })
+    let { status, data, total, nextPageToken } = res.data
+    if (!status) {
+      this.loading = false
+      this.total = total
+      this.page = nextPageToken
+      if (option === 'refresh') {
+        this.comments = data
+        wepy.stopPullDownRefresh()
+      } else {
+        if (data.length) {
+          this.comments = this.comments.concat(data)
+        }
+      }
+      if (data.length < 20) {
+        this.end = true
+        this.loading = true
+      }
+      this.$apply()
+    }
+  }
+  onShow(option) {
+    try {
+      let reply = wepy.getStorageSync('reply')
+      if (reply) {
+        this.loading = false
+        this.page = 0
+        this.comments = []
+        this.getCommentData()
+        wepy.removeStorageSync('reply')
+      }
+    } catch (error) {}
+  }
+  async onPullDownRefresh() {
+    this.page = 0
+    this.getCommentData('refresh')
+  }
+  async onLoad(option) {
+    this.getIphoneX()
+    this.height = wepy.getSystemInfoSync().windowHeight
+    this.id = option.id
+    // this.id = '315'
+    // 判断是否完成发帖任务过来的
+    if (option.taskPostStatus) {
+      this.taskStatus = JSON.parse(option.taskPostStatus)
+    }
+    this.project = option.project
+    this.openid = await this.getOpenid()
+    // 获取分享帖子任务数据
+    this.postTaskStatus = this.getOnlyTask('360che_tuan_task_share_post') || {}
+    this.getDate()
+    this.getCommentData()
+    this.$apply()
+  }
+}
+</script>

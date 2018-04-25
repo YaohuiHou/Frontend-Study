@@ -1,0 +1,64 @@
+<style lang="less" scoped>
+  .menu{
+    display: flex;
+    padding: 0 0 12px;
+    background: #fff;
+    justify-content: space-between;
+    .nav{
+      flex:1;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 14px;
+      color: #353535;
+      letter-spacing: 0;
+      line-height: 22px;
+      &::before{
+        content:'';
+        display: block;
+        width: 50px;
+        height: 52px;
+      }
+    }
+    .mans:before{
+      background: url('https://s.kcimg.cn/wechat/vanca/mans-icon.png');
+      background-size: cover;
+    }
+    .best-ask:before{
+      background: url('https://s.kcimg.cn/wechat/vanca/best-ask.png');
+      background-size: cover;
+    }
+    .hot-post:before{
+      background: url('https://s.kcimg.cn/wechat/vanca/hot-post-icon.png');
+      background-size: cover;
+    }
+    .more:before{
+      background: url('https://s.kcimg.cn/wechat/vanca/expect-icon.png');
+      background-size: cover;
+    }
+  }
+</style>
+<template>
+  <view class="menu">
+    <navigator url="/pages/ranking" hover-class="none" class="nav mans">达人榜</navigator>
+    <navigator url="/pages/answer" hover-class="none" class="nav best-ask">好回答</navigator>
+    <navigator url="/pages/expertRank" hover-class="none" class="nav hot-post">热帖榜</navigator>
+    <view class="nav more">更多内容</view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+export default class Index extends wepy.component {
+  props = {
+
+  }
+  data = {
+
+  }
+  mixins = [mixin]
+  methods = {
+  }
+}
+</script>

@@ -1,0 +1,117 @@
+<style scoped lang="less">
+  .list{
+    padding: 20rpx 0 12rpx;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    .head{
+      width: 64rpx;
+      height: 64rpx;
+      border-radius: 50%;
+    }
+    .content{
+      flex: 1;
+      display: flex;
+      margin-left: 16rpx;
+      justify-content:space-between;
+      flex-direction:column;
+      position: relative;
+      overflow: hidden;
+      .delete {
+        font-size:28rpx;
+        color:#888;
+        position: absolute;
+        right: 8rpx;
+      }
+      .name{
+        font-size: 28rpx;
+        color: #576B95;
+        line-height: 36rpx;
+      }
+      .messge{
+        margin-top: 12rpx;
+        font-size: 32rpx;
+        color: #353535;
+        letter-spacing: 1rpx;
+        word-break: break-all;
+        text-align: justify;
+        line-height: 48rpx;
+      }
+      .img{
+        max-width:100%;
+      }
+    }
+    .footer{
+      line-height: 60rpx;
+      margin-top: 4rpx;
+      font-size: 24rpx;
+      color: #B2B2B2;
+      .like, .discuss{
+        padding: 0 16rpx;
+        float: right;
+        font-size: 28rpx;
+        &:before{
+          margin-right: 8rpx;
+          content: '\e777';
+          font-family: 'vanca'
+        }
+      }
+      .discuss{
+        padding-right: 0;
+      }
+      .discuss:before{
+        content: '\e77e';
+      }
+    }
+  }
+</style>
+<template>
+<view class="list">
+  <image src="{{list.avatar}}" class="head" @error="imgError" @tap="userLink"></image>
+  <view class="content">
+    <view class="delete" @tap.stop="delete" wx:if="{{list.manager}}">删除</view>
+    <view class="name"><text>{{list.nickname}}</text></view>
+    <view class="messge">
+      <text>{{list.content}}</text>
+      <view wx:for="{{list.images}}" wx:key="{{index}}">
+        <image src="{{item}}" class="img" mode="widthFix" @error="showErrorImage" data-index="{{index}}"></image>
+      </view>
+    </view>
+    <view class="footer">
+      {{list.date}}
+      <!-- <view class="discuss"><text>评论</text></view>
+      <view class="like"><text>{{list.liked}}</text></view> -->
+    </view>
+  </view>
+</view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import mixin from '../../mixins'
+  export default class Counter extends wepy.component {
+    props = {
+      list: {}
+    }
+    data = {
+    }
+    mixins = [mixin]
+    watch = {
+    }
+    methods = {
+      imgError (e) {
+        this.list.headpic = 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+      },
+      showErrorImage (e) {
+        this.list.images[e.target.dataset['id']] = ''
+        this.$apply()
+      },
+      userLink () {
+        this.toUserPage(this.list.openid)
+      },
+      delete () {
+        let { id, openid } = this.list
+        this.$emit('eventDeleteComment', id, openid)
+      }
+    }
+  }
+</script>

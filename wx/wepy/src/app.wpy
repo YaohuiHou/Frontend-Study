@@ -1,0 +1,276 @@
+<style lang="less">
+@font-face {
+  font-family: 'vanca';  /* project id 553467 */
+  src: url('//at.alicdn.com/t/font_553467_qe4yvojzojz9qkt9.eot');
+  src: url('//at.alicdn.com/t/font_553467_qe4yvojzojz9qkt9.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_553467_qe4yvojzojz9qkt9.woff') format('woff'),
+  url('//at.alicdn.com/t/font_553467_qe4yvojzojz9qkt9.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_553467_qe4yvojzojz9qkt9.svg#vanca') format('svg');
+}
+page{
+  background-color: #f3f4f5;
+  height: 100%;
+}
+button:after{
+  border:none;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.group-card{
+    margin-top: 40rpx;
+    min-height: 200rpx;
+    padding: 48rpx;
+    background: #FFFFFF;
+    box-shadow: 0 6rpx 0 0 #FEBE03, 0 8rpx 24rpx 0 #E07400;
+    border-radius: 8rpx;
+    position: relative;
+    &::before,&::after{
+      content:'';
+      width: 10px;
+      height: 36px;
+      display: block;
+      position: absolute;
+      top:-20px;
+      left: 12px;
+      background: url('https://static-test.360che.com/wechat/vanca/ding.png') 50% 50%;
+      background-size: cover;
+    }
+    &::after{
+      right: 12px;
+      left: initial;
+    }
+    .title{
+      font-size: 36rpx;
+      color: #7D4900;
+      line-height: 36rpx;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &::before,&::after{
+        content: '';
+        display: block;
+        width: 17px;
+        height: 5px;
+        margin-right: 8px;
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAOCAYAAAEwMI5eAAAABGdBTUEAALGPC/xhBQAAAmZJREFUOBG9VE1oE1EQntnstkUPVQmpbVXQowHFUw+KSvTgzYPe9CDU6EHwkKsI/iD1UIsiCBa1HkRQqcGbB9NT1ei9gje9NBZq/UlLk93s+5zZJE2zsCl7iAO7896b7818b2beI9pIzJPNwJc8OuMgEonAS0ftwNO0iQSpwYwNlAXGHUEbGlFdCqLhbjJrRaJ7tgYmlHtHIzG4k8yaG8NFBcQmhbebBumvNw9XSHg2sWfN8IXyMRufGVgFcUXcVpmgelUiNMbWZdMebNHM0xm3xWBlIWOW9pWVVSzBZH8BU3sNln8EJfVvDmmi2oPF8hgCx/aEabtArpWBmyCSj03fEF9cLIX8dp7itZPFm92mXnT5V37B3NsW9KON9wSqCLGqONFEywedSwE0+VZuXbKrPEEnP7RO0buFAmayzeaDWoBwkzfnTd1g6tlzVJodoT2nGwui9IhxRatjHvQDX6eB5QWY+weMubajENdPgFdnGB8omlvby7i+K9t00jpvc6ULWoNTvuc8+TRKPqfJl1thrDmq0WM6t/KImddy2FVCdSLOO/IoQ307QftvM6UO149cmiUqXgX+lJhNYoYu/Ty+nlgX8iIt9copmuc9wLcXwi1CpP5mIgmMp4LHyMYnacWa8NHPl4SJhicZFM0yh6frMq7JuFZfJxk397S1ffhYbiKt+yh1JGxpzYcPBR0NLaWIzSOt9yn6mih0rcyhsdoixHVy8DHJ+aOgUx+Z5F62SeU3YeoEyEtI2ayc2rraQxoAD5OD5Jpn8KWPgmaWkKIlI/KMSXP78tw7ibN85Xu850yd/w/5B66jP7f5GFa5AAAAAElFTkSuQmCC) no-repeat 50% 50%; -webkit-background-size: 17px 7px; background-size: 17px 7px;
+      }
+      &::after{
+        margin-left: 8px;
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAOCAYAAAEwMI5eAAAABGdBTUEAALGPC/xhBQAAAmRJREFUOBHVVE1oU0EQntn3kyhoqi21aQvFo8aLJz0oSvSgN/8ugrcavHmIF4/+FUTa+oeiRTGIUCpo8W5y8GKuHip4E4VaRVRI0DTJ28/Z92KSV33WV1BwYPfN7Hwzs+/b2SWKEohE+YJ1g8D91eUQCrXP/joeO7mQo9vA2eEcxvvDkd2AP9L11fVBqScbdVSAQtUNfFsucRTIX9djAxVJFwnyHbjdlyarNg/HI3Y9IleX+HBzz28zL3HaxkZFzfOpCrXLfVvIYnqkwkfra37g9WUFSsghJIlYBmQYm1dJlFk3os8MF/X1rRrV98CrR9A3ewwp7bwB6h/NAUdTqSI5zSycJpHhKeUO8r6v72LtAVf6cihkdHDAMi9+gp6xl+nIn0vYqKlJPlLs8OGuI6pbgpTddYm+JmS3iDZfSkqthCFdCBfbpro9R2+eb6NNBzphDZMoLOqk7hQLuwLLnI53bhB4OQtUF4B7mzVuCWcrEZNMnx8q64sbKoazleQIbdckpMLa42R5o2TrDCm5WxbmyKK7dLB+h5ljH0LcTQVtZDZyo/cplJfl1ABo+wWm9E7JJfU/PCN6cRqovWW2qUSHGnv/+sbMg+VN9Pq3TFj6tbyeAaYTwEOnHPev4+D9N0TaOMNKyBraER3bv0vaXUn/coaoEYnTk9L+JqsMYdT/wlw30+CODEt0m4lbOnyc1DYY0U2I5LfyUDzFhf2gUblzyR5/uT0tfiGa3Q1qSCZNeaJa27VUUfllrpEfIMVD0rHbTY2xkTQa3gNYOttqZmLzN0FjG71ErjrGJz7Ge6JChf9D4ztFChsqwyDdkAAAAABJRU5ErkJggg==) no-repeat 50% 50%; -webkit-background-size: 17px 7px; background-size: 17px 7px;
+      }
+    }
+  }
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+export default class extends wepy.app {
+  config = {
+    debug: true,
+    pages: [
+      'pages/index',
+      'pages/group',
+      'pages/message',
+      'pages/ranking',
+      'pages/expertRank',
+      'pages/answer',
+      'pages/guide',
+      'pages/user',
+      'pages/friend',
+      'pages/toPost',
+      'pages/toAsk',
+      'pages/articleDetail',
+      'pages/postDetail',
+      'pages/replyFloor',
+      'pages/toReplay',
+      'pages/chatGroup',
+      'pages/like',
+      'pages/notice',
+      'pages/userPostList',
+      'pages/corps/list',
+      'pages/corps/corpsPeople',
+      'pages/corps/addPhone',
+      'pages/userReplytList',
+      'pages/goldShop',
+      'pages/joinGroupDes',
+      'pages/topicList',
+      'pages/topicDetails',
+      'pages/activityRule'
+    ],
+    window: {
+      backgroundTextStyle: 'black',
+      navigationBarBackgroundColor: '#FF9400',
+      navigationBarTitleText: '万能的卡友圈',
+      navigationBarTextStyle: 'light',
+      onReachBottomDistance: 270
+    },
+    networkTimeout: {
+      request: 5000
+    },
+    tabBar: {
+      color: '#888',
+      selectedColor: '#ff9400',
+      list: [
+        {
+          pagePath: 'pages/index',
+          text: '首页',
+          iconPath: './images/home.png',
+          selectedIconPath: './images/home_selected.png'
+        },
+        {
+          pagePath: 'pages/message',
+          text: '消息',
+          iconPath: './images/message.png',
+          selectedIconPath: './images/message_selected.png'
+        },
+        {
+          pagePath: 'pages/group',
+          text: '我的',
+          iconPath: './images/user.png',
+          selectedIconPath: './images/user-selected.png'
+        }
+      ]
+    }
+  }
+  globalData = {
+    userInfo: {},
+    // url: 'https://kjt-wx.kcimg.cn'
+    url: 'https://yufabu-policy-wx.kcimg.cn'
+  }
+  constructor() {
+    super()
+    this.use('requestfix')
+    this.use('promisify')
+  }
+
+  onLaunch() {
+    this.checklogin()
+  }
+  TwoGetUserinfo () {
+    wepy.openSetting().then((res) => {
+      wepy.getUserInfo().then((res) => {
+        wepy.setStorageSync('userInfo', res.userInfo)
+      }).catch((res) => {
+        this.getUser()
+        console.log(res, '登录失败')
+      })
+    })
+  }
+  // 用户登陆
+  async logins() {
+    wepy.login().then(res => {
+      wepy.request(`${this.globalData.url}/getUnionid?code=${res.code}`)
+          .then(res => {
+            this.globalData.userInfo['openid'] = res.data['openid']
+            this.globalData.userInfo['unionid'] = res.data['unionid']
+            try {
+              wepy.setStorageSync('openid', res.data['openid'])
+              wepy.setStorageSync('unionid', res.data['unionid'])
+            } catch (e) {}
+          })
+      this.getinfo()
+    })
+      .catch(res => {
+        console.log(res)
+      })
+  }
+  // 用户授权获取个人信息
+  async getinfo() {
+    wepy
+      .getUserInfo()
+      .then(res => {
+        try {
+          for (let key in res.userInfo) {
+            if (key !== 'gender' && key !== 'avatarUrl') {
+              this.globalData.userInfo[key] = res.userInfo[key]
+            } else {
+              this.globalData.userInfo['sex'] = res.userInfo['gender']
+              this.globalData.userInfo['headimgurl'] = res.userInfo['avatarUrl']
+            }
+          }
+          this.getUser()
+        } catch (e) {}
+      })
+      .catch(res => {
+        this.getUser()
+        this.TwoGetUserinfo()
+        console.log('拒绝授权')
+      })
+  }
+  // 判断是否登录
+  async checklogin() {
+    wepy.checkSession()
+      .then(res => {
+        try {
+          this.globalData.userInfo['openid'] = wepy.getStorageSync('openid')
+          this.globalData.userInfo['unionid'] = wepy.getStorageSync('unionid')
+          if (this.globalData.userInfo['openid'] && this.globalData.userInfo['unionid']) {
+            this.getUser()
+          } else {
+            this.logins()
+          }
+        } catch (error) {}
+      })
+      .catch(res => {
+        this.logins()
+      })
+  }
+  // 对象转换成字符串
+  jsonToString(object) {
+    let s = ''
+    for (let i in object) {
+      s += `${i}=${object[i]}&`
+    }
+    return s.substring(0, s.length - 1)
+  }
+  // 添加用户
+  addUser() {
+    this.globalData.userInfo['command'] = 'add'
+    wepy
+      .request({
+        url: `${this.globalData.url}/user`,
+        data: this.globalData.userInfo,
+        method: 'post'
+      })
+      .then(res => {})
+  }
+  // 获取用户并判断是否存在此用户，并判断当前用户信息是否更改如果有改变走修改个人信息接口
+  async getUser() {
+    let res = await wepy.request({
+      url: `${this.globalData.url}/getUserInfo`,
+      data: {
+        openid: this.globalData.userInfo['openid']
+      }
+    })
+    try {
+      let { status, data } = res.data
+      wepy.setStorageSync('userInfo', res.data.data)
+      if ((!status && !data.openid) || status) {
+        this.addUser()
+      } else {
+        // 修改用户信息
+        let user = await wepy.getUserInfo()
+        let uid = this.globalData.userInfo['openid']
+        user.userInfo['unionid'] = this.globalData.userInfo['unionid']
+        user.userInfo['nickname'] = user.userInfo['nickName']
+        user.userInfo['command'] = 'upgrade'
+        user.userInfo['openid'] = uid
+        user.userInfo['sex'] = user.userInfo.gender
+        user.userInfo['headimgurl'] = user.userInfo.avatarUrl
+        delete user.userInfo['nickName']
+        await wepy.request({
+          url: `${this.globalData.url}/user`,
+          data: user.userInfo,
+          method: 'POST'
+        })
+      }
+    } catch (error) {}
+  }
+}
+</script>

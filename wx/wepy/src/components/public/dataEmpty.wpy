@@ -1,0 +1,50 @@
+<style lang="less" scoped>
+.data-null {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 140rpx;
+  box-sizing: border-box;
+  &.jump-cover{
+    position: fixed;
+    left: 0;
+    top:0;
+    right: 0;
+    bottom: 0;
+    z-index: 1010;
+    background: #f3f4f5;
+  }
+  image{
+    width: 400rpx;
+    height: 300rpx;
+    margin: 0 auto 16rpx;
+  }
+  .text{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 44rpx;
+  }
+}
+</style>
+<template>
+  <view class="data-null {{jump ? '': 'jump-cover'}}">
+    <image src="../../images/networkError.png" class="head"></image>
+    <view class="text">{{msg}}</view>
+  </view>  
+</template>
+<script>
+  import wepy from 'wepy'
+  export default class Index extends wepy.component {
+    props = {
+      msg: String,
+      jump: String // 如果需要全屏显示，不需要传递jump这个参数
+    }
+    data = {
+    }
+    watch = {
+    }
+    methods = {
+    }
+  }
+</script>

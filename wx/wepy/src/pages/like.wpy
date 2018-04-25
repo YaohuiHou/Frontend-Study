@@ -1,0 +1,174 @@
+<style lang="less">
+page {
+  width: 100%;
+  height: 100%;
+  background: rgb(244, 244, 244);
+  padding: 0 32rpx 40rpx 32rpx;
+  box-sizing: border-box;
+}
+.container {
+  justify-content: flex-start;
+}
+.date {
+  padding: 10rpx 16rpx;
+  font-size: 24rpx;
+  color: #FFFFFF;
+  line-height: 24rpx;
+  background: rgba(178,178,178,0.40);
+  border-radius: 4px;
+  margin: 40rpx auto 24rpx;
+}
+.notice {
+  margin-bottom: 40rpx;
+  padding-right: 32rpx;
+  padding-left: 104rpx;
+  position: relative;
+  &.new-like{
+    margin:40rpx 0 0;
+  }
+  .icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: 50%;
+  }
+  .title {
+    font-size: 24rpx;
+    color: #576B95;
+    line-height: 28rpx;
+    display: block;
+  }
+  .card {
+    margin-top: 4px;
+    background: #fff;
+    border-radius: 4px;
+    width: 550rpx;
+    height: 120rpx;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    &::before {
+      content:"";
+      position:absolute;
+      top:22rpx;
+      left:-9rpx;
+      width:20rpx;
+      height:20rpx;
+      background:#fff;
+      transform:rotate(45deg);
+    }
+    .card-text {
+      margin-left: 20rpx;
+      flex: 1;
+      font-size: 32rpx;
+      color: #353535;
+      line-height: 48rpx;
+      &::before {
+        content: "\e77b";
+        font-family: 'vanca';
+        margin-right: 12rpx;
+        color: rgb(178, 178, 178);
+        font-size: 28rpx;
+      }
+    }
+    .aritcle-title {
+      margin-right: 16rpx;
+      width: 132rpx;
+      line-height: 32rpx;
+      font-size: 24rpx;
+      color: #A1A9B3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <block wx:for="{{list}}" wx:key="{{index}}" wx:if="{{!emptyMsg}}">
+      <view class="date" wx:if="{{item.date}}">{{item.date}}</view>
+      <!-- <view class="notice {{index==0 && !item.date? 'new-like':''}}"> -->
+        <view class="notice">
+        <image class="icon" src="{{item.headimgurl}}"></image>
+        <text class="title">{{item.nickname}}</text>
+        <view class="card">
+          <text class="card-text">赞了你的动态</text>
+          <text class="aritcle-title">{{item.content}}</text>
+        </view>
+      </view>
+      <!-- 返回主页按钮 -->
+      <goBack></goBack>
+    </block>
+    <empty :msg.sync="emptyMsg" jump='' wx:if="{{emptyMsg}}"></empty>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+import empty from '../components/public/dataEmpty'
+import goBack from '@/components/public/goBack'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '赞我的'
+  }
+  components = { empty, goBack }
+
+  mixins = [mixin]
+
+  data = {
+    list: [],
+    netErr: false,
+    emptyMsg: ''
+  }
+
+  computed = {}
+
+  methods = {}
+
+  events = {}
+
+  // 过滤相同日期
+  filterDate(likeList = []) {
+    likeList = likeList.reverse() // 显示最新数据 反转一下数据
+    likeList.forEach((item, index) => {
+      let date = item.date
+      if (date) {
+        for (let i = index + 1; i < likeList.length; i++) {
+          const otherDate = likeList[i].date
+          if (otherDate === date) {
+            likeList[i].date = ''
+          }
+        }
+      }
+    })
+  }
+
+  onLoad(option) {
+    let likeList
+    try {
+      likeList = wepy.getStorageSync('likeList').like
+      this.filterDate(likeList)
+      this.list = likeList
+      this.$apply()
+      if (!likeList.length) {
+        this.emptyMsg = '暂无点赞哦~'
+      }
+      // 删除新的点赞数量提醒
+      if (wepy.getStorageSync('likeNum')) {
+        wepy.removeStorageSync('likeNum')
+      }
+      this.$apply()
+    } catch (error) {
+      this.emptyMsg = '暂无点赞哦~'
+    }
+  }
+}
+</script>

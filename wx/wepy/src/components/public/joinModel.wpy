@@ -1,0 +1,207 @@
+<style lang="less" scoped>
+  .background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.8);
+    overflow-y: scroll;
+    z-index: 1005;
+  }
+  .join-model{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20rpx;
+    box-sizing: border-box;
+  }
+  .join{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 24rpx;
+    margin-top: 114rpx;
+    width: 702rpx;
+    height: 890rpx;
+    background: #fff;
+    border-radius: 16rpx;
+  }
+  .join-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 268rpx;
+    background: url('https://s.kcimg.cn/wechat/vanca/join-header-bg.png') 50% 50%;
+    background-size: cover;
+    width: 100%;
+  }
+  .join-header image{
+    margin-top: -40rpx;
+    width: 160rpx;
+    height: 160rpx;
+    border-radius: 100%;
+    object-fit: cover;
+    z-index: 2;
+  }
+  .join-header .title{
+    margin-top: 16rpx;
+    font-size: 36rpx;
+    color: #F5C773;
+  }
+  .join-header .header-content{
+    margin-top: 16rpx;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .num{
+    font-size: 28rpx;
+    color: #C2B399;
+    line-height: 28rpx;
+  }
+  .person{
+    margin-left: 16rpx;
+  }
+  .join-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .join-content view{
+    font-size: 32rpx;
+    color: #353535;
+    line-height: 32rpx;
+  }
+  .join-content .first{
+    font-weight: bold;
+    margin-top: 40rpx;
+    font-size: 64rpx;
+    color: #FF9400;
+    line-height: 64rpx;
+  }
+  .join-content .second,.join-content .forth{
+    margin-top: 48rpx;
+  }
+  .join-content .third{
+    margin-top: 24rpx;
+  }
+  .join-content .fifth{
+    margin-top: 60rpx;
+    font-size: 36rpx;
+    color: #FF9400;
+    font-weight: bold;
+  }
+  .join-content text{
+    margin-left: 16rpx;
+    font-size: 36rpx;
+    color: #FF9400;
+    font-weight: bold;
+  }
+  .join .button{
+    text-align: center;
+    margin-top: 56rpx;
+    width: 560rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    color: #fff;
+    background-image: linear-gradient(44deg, #FFB200 0%, #FD7B1E 100%);
+    box-shadow: 0 4rpx 24rpx 0 rgba(251,156,51,0.40);
+    border-radius: 200rpx;
+    font-size: 36rpx;
+  }
+  .close{
+    margin-top: 40rpx;
+    position: relative;
+    width: 60rpx;
+    height: 60rpx;
+    border-radius: 100%;
+    border: 2rpx solid #fff;
+    box-sizing: border-box;
+  }
+  .close:before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -14rpx;
+    width: 30rpx;
+    height: 2rpx;
+    background-color: #fff;
+    -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+  }
+  .close:after{
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -14rpx;
+    width: 30rpx;
+    height: 2rpx;
+    background-color: #fff;
+    -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+  }
+</style>
+<template>
+  <view class="background">
+    <view class="join-model">
+      <view class="join">
+        <view class="join-header">
+          <image src="{{group.groupAvatar?group.groupAvatar:'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'}}"></image>
+          <text class="title">{{group.title}}</text>
+          <view class="header-content">
+            <text class="num">帖子:{{group.posterTotal}}</text>
+            <text class="person num">成员:{{group.userTotal}}人</text>
+          </view>
+        </view>
+        <view class="join-content">
+          <view class="first">欢迎您，加入我们</view>
+          <view class="second">加入小组后</view>
+          <view class="third">你可以即刻进行<text>发帖回帖</text></view>
+          <view class="forth">为了维护小组<text>更活跃的气氛</text></view>
+          <view class="fifth">每位卡友“只能”加入一个小组</view>
+        </view>
+        <button class="button" @tap="toJoin">加入该小组</button>
+      </view>
+      <view class="close" @tap="showJoinModelFn"></view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+
+export default class Index extends wepy.component {
+  props = {
+    group: Object
+  }
+  components = {}
+
+  mixins = [mixin]
+
+  data = {}
+
+  computed = {}
+
+  methods = {
+    showJoinModelFn() {
+      this.$emit('showJoinModelFn')
+    },
+    toJoin() {
+      this.$emit('showJoinModelFn')
+      wepy.navigateTo({
+        url: `/pages/joinGroupDes?groupId=${this.group.id}&groupName=${
+          this.group.title
+        }`
+      })
+    }
+  }
+
+  events = {}
+
+  onLoad() {}
+}
+</script>

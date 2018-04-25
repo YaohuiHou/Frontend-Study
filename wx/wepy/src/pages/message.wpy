@@ -1,0 +1,440 @@
+<style lang="less">
+page {
+  height: 100%;
+  background: rgb(244, 244, 244);
+}
+.container {
+  justify-content: flex-start;
+}
+.list {
+  width: 100%;
+  padding-left: 32rpx;
+  background: #FFFFFF;
+  box-sizing:border-box;
+  .item {
+    height: 120rpx;
+    padding-left: 96rpx;
+    box-sizing: border-box;
+    position: relative;
+    border-bottom: 1rpx solid rgba(23,24,26,0.12);
+    &:last-child {
+      border-bottom: 0;
+    }
+    .img-icon {
+      position: absolute;
+      top: 24rpx;
+      left: 0;
+      width: 72rpx;
+      height: 72rpx;
+      border-radius: 50%;
+    }
+    .text {
+      font-size: 32rpx;
+      line-height: 120rpx;
+      color: #353535;
+      display:block;
+    }
+    .count {
+      position: absolute;
+      top: 40rpx;
+      right: 80rpx;
+      padding: 8rpx 25rpx;
+      font-size: 24rpx;
+      color: #FFFFFF;
+      line-height: 24rpx;
+      background: #FF7700;
+      border-radius: 200rpx;
+    }
+    &::after {
+      font-family: "vanca";
+      content: "\e769";
+      color: rgb(173, 179, 180);
+      font-size: 24rpx;
+      font-weight: 100;
+      position: absolute;
+      top:44rpx;
+      right:28rpx;
+      width: 30rpx;
+      height: 20rpx;
+    }
+  }
+}
+.group {
+  padding: 46rpx 32rpx 0;
+  .group-title {
+    font-size: 36rpx;
+    color: #353535;
+    letter-spacing: 0;
+    line-height: 36rpx;
+    display: block;
+    margin-bottom: 30rpx;
+  }
+  .group-item {
+    background: #FFFFFF;
+    box-shadow: 0 0 24rpx 0 rgba(255,119,0,0.08);
+    border-radius: 16rpx;
+    margin-bottom: 24rpx;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24rpx;
+    box-sizing: border-box;
+    height: 144rpx;
+    .group-item-left {
+      width: 88rpx;
+      height: 88rpx;
+      position: relative;
+      .group-point {
+        position: absolute;
+        width: 18rpx;
+        height: 18rpx;
+        background: #E64340;
+        border: 2rpx solid #fff;
+        border-radius: 50%;
+        right: -8rpx;
+        top: -8rpx;
+      }
+      .group-img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .group-item-right {
+      width: 534rpx;
+
+
+      .group-item-title {
+        width: 534rpx;
+        height: 48rpx;
+        line-height: 48rpx;
+        font-size: 32rpx;
+        color: #353535;
+        letter-spacing: 0.5rpx;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+      }
+      .group-content{
+        margin-top:10rpx;
+        line-height:36rpx;
+        height:36rpx;
+        font-size:24rpx;
+        color:#888888;
+        display:block;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+      }
+      .group-content-count {
+        color: #E64340;
+        font-size: 24rpx;
+      }
+    }
+  }
+}
+.tips {
+  position: fixed;
+  left: 288rpx;
+  bottom: 30rpx;
+  padding: 16rpx 26rpx;
+  color: #fff;
+  font-size: 32rpx;
+  line-height: 32rpx;
+  background: rgb(73, 73, 73);
+  border-radius: 100rpx;
+  &::after {
+    content:"";
+    position:absolute;
+    bottom:-6rpx;
+    left:80rpx;
+    width:20rpx;
+    height:20rpx;
+    background:#494949;
+    transform:rotate(45deg);
+  }
+}
+</style>
+<template>
+  <view class="container">
+
+    <block wx:if="{{!showNetErr}}">
+
+      <view class="list">
+        <!-- <view class="item" @tap="jump('notice')">
+          <image class="img-icon" src="https://s.kcimg.cn/wechat/vanca/msg-logo.png"></image>
+          <text class="text">系统通知</text>
+          <text class="count" wx:if="{{noticeCount}}">{{noticeCount}}</text>
+        </view> -->
+        <view class="item" @tap="jump('like')">
+          <image class="img-icon" src="../images/msg-like.png"></image>
+          <text class="text">赞我的</text>
+          <text class="count" wx:if="{{likeCount}}">{{likeCount}}</text>
+        </view>
+      </view>
+
+      <block wx:if="{{groupList && groupList.length}}">
+        <view class="group">
+          <text class="group-title">我的讨论组</text>
+          <view>
+            <view class="group-item" wx:if="{{item.show && item.replies.length}}" @tap="jumpToGroup({{item}},{{index}})" wx:for="{{groupList}}" wx:item="{{item}}" wx:key="{{index}}">
+              <view class="group-item-left">
+                <image class="group-img" src="https://s.kcimg.cn/wechat/vanca/msg-group.png"></image>
+                <view class="group-point" wx:if="{{!item.read}}"></view>
+              </view>
+              <view class="group-item-right">
+                <view class="group-item-title">{{item.content}}</view>
+                <view class="group-content" wx:if="{{item.replies.length}}">
+                  <text class="group-content-count" wx:if="{{!item.read}}">{{'[未读消息] '}}</text>
+                  <text class="group-content-text">{{item.replies[0].nickname+' : '+item.replies[0].content}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 空 -->
+      <Nothing></Nothing>
+      <view class="tips" wx:if="{{tipsShow}}">
+        <text>有内幕，探个究竟...</text>
+      </view>
+
+      <block wx:if="{{showLoading}}">
+        <loading></loading>
+      </block>
+
+    </block>
+    
+    <netErr wx:if="{{showNetErr}}" text=''></netErr>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+import loading from '../components/public/loadPage'
+import netErr from '../components/public/netError'
+import Nothing from '../components/nothing'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '消息'
+  }
+
+  mixins = [mixin]
+
+  components = {
+    loading,
+    netErr,
+    Nothing
+  }
+
+  data = {
+    showLoading: false, // 显示loading
+    scrollRequestLock: true, // 滚动加载的锁
+    tipsShow: false, // 是否显示提醒
+    likeCount: 0, // 未读点赞数量
+    noticeCount: 0, // 未读通知数量
+    groupList: [], // 讨论组列表
+    page: 1, // 当前页码
+    hasNextPage: true, // 是否有下一页
+    showNetErr: false // 展示网络异常提示
+  }
+
+  computed = {}
+
+  methods = {
+    jumpToGroup (item, index) {
+      let {commentId, replies, pid} = item
+      if (replies.length) {
+        this.updateReadState(commentId, replies[0].lastTime)
+        this.groupList[index].read = true
+        // 跳转的时候显示有内幕提示文案
+        // let unreadList = this.groupList.filter(x => !x.read)
+        // this.tipsShow = !!unreadList.length
+      }
+      wepy.navigateTo({
+        url: `chatGroup?pid=${pid}&commentId=${commentId}`
+      })
+    }
+  }
+
+  events = {
+    'refresh': () => {
+      wepy.showToast({
+        title: '刷新成功',
+        icon: 'none',
+        duration: 2000
+      })
+      this.requestFunc()
+    }
+  }
+
+  // 获取某个讨论组未读数量
+  getUnreadCount (commentId) {
+    try {
+      let unreadList = wepy.getStorageSync('unreadList')
+      if (unreadList) {
+        let filterRes = unreadList.filter(x => x.commentId === commentId)
+        if (filterRes.length) {
+          let { count, length } = filterRes[0]
+          return length - count
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    return 0
+  }
+  // 渲染讨论组列表
+  renderGroupList (groupList) {
+    // 获取讨论组列表成功
+    if (groupList.length) {
+      let tipsShow = false
+      let readMap = wepy.getStorageSync('readMap')
+      let openid = this.openid
+      groupList.forEach(item => {
+        let {commentId, replies} = item
+        // 判断已读
+        if (!replies.length || readMap[commentId] === replies[0].lastTime || openid === replies[0].openid) {
+          item.read = true
+        }
+        // 判断是否显示提醒
+        if (item.show && replies.length && readMap[commentId] !== replies[0].lastTime && openid !== replies[0].openid) {
+          tipsShow = true
+        }
+      })
+      this.tipsShow = tipsShow
+      this.groupList = [...this.groupList, ...groupList]
+      this.$apply()
+    }
+  }
+  // 滚动到底部
+  onReachBottom (e) {
+    this.loadMore()
+  }
+  // 分页加载
+  async loadMore () {
+    if (!this.hasNextPage || !this.scrollRequestLock) {
+      return
+    }
+    this.scrollRequestLock = false
+    let groupList = await this.getGroupByOpenid()
+    this.scrollRequestLock = true
+    this.renderGroupList(groupList)
+  }
+
+  // 根据openid获取某人所在的讨论组 -- 分页
+  async getGroupByOpenid () {
+    let openid = this.openid
+    let page = this.page
+    let resoult = []
+    try {
+      let res = await wepy.request({
+        url: `${this.host}/getUserCommentsList`,
+        data: {
+          openid,
+          page
+        }
+      })
+      if (res.statusCode !== 200) {
+        resoult = false
+        return
+      }
+      let { status, data } = res.data
+      if (status) {
+      } else {
+        this.page++
+        if (data.length < 50) {
+          this.hasNextPage = false
+        } else {
+          this.hasNextPage = true
+        }
+        resoult = data
+      }
+    } catch (error) {
+      resoult = false
+    }
+    this.$apply()
+    return resoult
+  }
+  setLike (data) {
+    let likelist
+    try {
+      if (wepy.getStorageSync('likeList')) {
+        likelist = wepy.getStorageSync('likeList').like
+        likelist = likelist.concat(data)
+        if (likelist.length > 200) {
+          likelist.slice(0, likelist.length - 200)
+        }
+      } else {
+        likelist = data || []
+        if (likelist.length > 200) {
+          likelist.slice(0, likelist.length - 200)
+        }
+      }
+    } catch (e) {
+      likelist = []
+    }
+    return likelist
+  }
+  setLikeNum (length) {
+    try {
+      if (!wepy.getStorageSync('likeNum')) {
+        wepy.setStorageSync('likeNum', length)
+      } else {
+        let likeNum = wepy.getStorageSync('likeNum')
+        likeNum = likeNum + length
+        this.likeCount = likeNum
+        wepy.setStorageSync('likeNum', likeNum)
+      }
+    } catch (error) {
+
+    }
+  }
+  async requestFunc () {
+    this.showLoading = true
+    let resList = await Promise.all([this.getListCount('notice'), this.getListCount('like'), this.getGroupByOpenid()])
+    this.showLoading = false
+    let [noticeList, likeList, groupList] = resList
+    // console.log(noticeList, likeList, groupList)
+    if (!noticeList || !likeList || !groupList) {
+      this.showNetErr = true
+      return
+    }
+    this.showNetErr = false
+    this.noticeCount = noticeList.length
+    this.likeCount = likeList.length
+    this.setLikeNum(likeList.length)
+    // 渲染讨论组列表
+    this.renderGroupList(groupList)
+    this.$apply()
+    try {
+      wepy.setStorageSync('noticeList', noticeList || [])
+      // 解决以前的老缓存点赞问题
+      if (!wepy.getStorageSync('newlikelist') && wepy.getStorageSync('likeList')) {
+        wepy.removeStorageSync('likeList')
+        wepy.setStorageSync('newlikelist', 'true')
+      }
+      // 设置点赞数据
+      let likes = this.setLike(likeList)
+      let json = {
+        like: likes
+      }
+      wepy.setStorageSync('likeList', json)
+    } catch (e) {}
+  }
+
+  async onShow () {
+    this.groupList = []
+    this.page = 1
+    let openid = await this.getOpenid()
+    if (openid) {
+      this.openid = openid
+      this.requestFunc()
+      this.$apply()
+    }
+  }
+}
+</script>

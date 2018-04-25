@@ -1,0 +1,182 @@
+<style lang="less" scoped>
+  .container-join{
+    background: #fff;
+    height: 100%;
+    overflow: auto;
+  }
+  .header{
+    height: 222rpx;
+    background-image: linear-gradient(0deg, #FFC551 0%, #FF9400 100%);
+    padding: 0 32rpx;
+    margin-bottom: 32rpx;
+    box-sizing: border-box;
+    .group-name{
+      display: flex;
+      color: #fff;
+      line-height: 48rpx;
+      text{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 48rpx;
+        font-weight: bold;
+      }
+      &:after{
+        content:'\e7b2';
+        font-family: 'vanca';
+        display: inline-block;
+        font-size: 10px;
+        margin-left: 16rpx;
+      }
+    }
+    .main{
+      margin-top: 16px;
+      height: 160rpx;
+      display: flex;
+      align-items: center;
+      .logo{
+        height: 160rpx;
+        width: 160rpx;
+        border-radius: 50%;
+        margin-right: 24rpx;
+        box-shadow: 0 8px 14px 0 rgba(90,52,0,0.24);
+      }
+      .content{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        flex: 1;
+        height: 160rpx;
+        overflow: hidden;
+        .name{
+          font-size: 18px;
+          color: #FFFFFF;
+          line-height: 20px;
+        }
+        .team{
+          margin:10px 0;
+          overflow: hidden;
+          display:flex;
+          text{
+            text-align: center;
+            background: #FFA126;
+            border-radius: 4rpx;
+            font-size: 12px;
+            padding: 3px 8px;
+            color: #FFFFFF;
+            line-height: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+      .people{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 162rpx;
+        height: 56rpx;
+        color: #fff;
+        background: #FFA126;
+        border-radius: 222rpx;
+        font-size: 32rpx;
+        &:before{
+          content:'';
+          width: 14px;
+          height: 14px;
+          background: url('https://s.kcimg.cn/wechat/vanca/money.png') 50% 50%;
+          background-size: contain;
+          margin-right: 2px;
+          display: inline-block;
+        }
+        &:after{
+          content:'\e769';
+          font-family: 'vanca';
+          font-size: 20rpx;
+          display: inline-block;
+          margin-left: 8rpx;
+        }
+      }
+    }
+  }
+  .main-wraper{
+    padding: 0 32rpx;
+    box-sizing: border-box;
+    .title{
+      font-size: 40rpx;
+      color: #353535;
+      line-height: 56rpx;
+      margin-top: 16rpx;
+      font-weight: bold;
+    }
+    .load-end{
+      font-size: 28rpx;
+      color: #888888;
+      line-height: 28rpx;
+      padding: 26rpx 0;
+      text-align: center;
+      width: 100%;
+    }
+  }
+</style>
+<template>
+<scroll-view class="container-join" scroll-y >
+  <view class="header">
+    <navigator class="group-name" hover-class="none" url="/pages/corps/list?id={{info.id}}"><text>{{info.title}}</text></navigator>
+    <view class="main">
+      <navigator url="/pages/user" hover-class="none">
+        <image src="{{userInfo.headimgurl}}" class="logo"></image>
+      </navigator>
+      <view class="content">
+        <view class="name">{{userInfo.nickname}}</view>
+        <view class="team"><text>{{info.title}}{{role}}</text></view>
+      </view>
+      <navigator class="people" url="/pages/goldShop">{{userInfo.integralTotal}}</navigator>
+    </view>
+  </view>
+  <sign :signInfo.sync="signDatas" :openid.sync="openid" wx:if="signDatas.project"></sign>
+  <view class="main-wraper">
+    <task :taskList.sync="taskData" :userInfo.sync="info"></task>
+    <view class="title">小组列表</view>
+    <groupList :group.sync="group"></groupList>
+    <view class="load-end" wx:if="{{group.length && group.length>20}}">{{end ? '已经到底啦': '正在加载中...'}}</view>
+   </view>
+</scroll-view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+import sign from './sign'
+import groupList from './group-list'
+import task from './task'
+export default class Index extends wepy.component {
+  components = {
+    sign: sign,
+    task: task,
+    groupList: groupList
+  }
+  props = {
+    openid: String,
+    info: Object,
+    group: Array,
+    taskData: Array,
+    signDatas: Object,
+    userInfo: Object,
+    end: Boolean
+  }
+  mixins = [mixin]
+  data = {
+  }
+  events = {}
+  computed = {
+    role: () => this.userInfo.openid === this.info.captainOpenid ? '团长' : '成员'
+  }
+  methods = {}
+
+  onLoad () {
+  }
+}
+</script>

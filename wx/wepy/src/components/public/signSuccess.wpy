@@ -1,0 +1,245 @@
+<style lang="less" scoped>
+  .background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background-image: url(https://s.kcimg.cn/wechat/vanca/sign_light.png);
+    background-repeat: no-repeat;
+    background-position: 0 -80rpx;
+    background-color: rgba(0, 0, 0, .8);
+    background-size: 100% auto;
+  }
+  .sign-content{
+    width: 610rpx;
+    height: 668rpx;
+    background: #fff;
+    border-radius: 12rpx;
+    margin: 0 70rpx;
+    margin-top: 256rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .sign-content .header-back{
+    margin-top: -80rpx;
+    width: 386rpx;
+    height: 252rpx;
+    background-image: url(https://s.kcimg.cn/wechat/vanca/sign_gold.png);
+    background-size: 100% 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .sign-content .header-back text{
+    width: 280rpx;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 166rpx;
+    font-size: 48rpx;
+    color: #fff;
+    line-height: 48rpx;
+  }
+  .sign-date{
+    margin-top: 40rpx;
+    font-size: 40rpx;
+    color: #353535;
+    line-height: 40rpx;
+  }
+  .sign-ul{
+    margin-top: 48rpx;
+    padding: 0 24rpx;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .sign-li{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 64rpx;
+    height: 80rpx;
+    background: rgba(178,178,178,0.12);
+    border-radius: 16rpx;
+  }
+  .sign-li.sign-select{
+    background: #FFBE01;
+  }
+  .sign-li text{
+    margin-top: 8rpx;
+    font-size: 28rpx;
+    color: #353535;
+    line-height: 28rpx;
+  }
+  .sign-li image{
+    margin-top: 8rpx;
+  }
+  .sign-li:not(:first-child){
+    margin-left: 20rpx;
+  }
+  .sign-li .in{
+    width: 28rpx;
+    height: 20rpx;
+  }
+  .sign-li .gold{
+    width: 32rpx;
+    height: 24rpx;
+  }
+  .sign-li .gift{
+    width: 28rpx;
+    height: 24rpx;
+  }
+  .sign-tomorrow{
+    margin-top: 48rpx;
+    font-size: 32rpx;
+    color: #888;
+    line-height: 32rpx;
+  }
+  .sign-tomorrow text{
+    margin: 0 8rpx;
+    color: #FFBE01;
+  }
+  .sign-content button{
+    margin-top: 48rpx;
+    width: 480rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    background-image: linear-gradient(44deg, #FFB200 0%, #FD7B1E 100%);
+    box-shadow: 0 4rpx 24rpx 0 rgba(251,156,51,0.40);
+    border-radius: 200rpx;
+    color: #fff;
+  }
+  .left-gold{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 12rpx;
+    height: 48rpx;
+  }
+  .left-gold text{
+    font-size: 24rpx;
+    line-height: 24rpx;
+  }
+  .left{
+    color: #888;
+  }
+  .to-change{
+    margin-left: 16rpx;
+    color: #353535;
+    font-size: 12px;
+  }
+</style>
+<template>
+  <view class="background">
+    <view class="sign-content">
+      <view class="header-back">
+        <text>+{{nowGetMoneyNum}} 牛币</text>
+      </view>
+      <view class="sign-date">连续签到 {{continuity}}天</view>
+      <view class="sign-ul">
+        <block wx:for="{{signList}}" wx:key="{{index}}">
+          <view class="sign-li {{item.type === 'in' ? 'sign-select' : ''}}">
+            <text class="day">{{item.day}}</text>
+            <image class="{{item.type}}" src="https://s.kcimg.cn/wechat/vanca/sign-{{item.type}}.png"></image>
+          </view>
+        </block>
+      </view>
+      <view class="sign-tomorrow">明日签到可领<text>{{tomorrowNum}}牛币</text>哦~</view>
+      <button @tap="sign">明天继续</button>
+      <view class="left-gold"><text class="left">牛币余额：{{total}}</text><navigator url="/pages/goldShop" hover-class="none" class="to-change">去兑换</navigator></view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+
+export default class Index extends wepy.component {
+  props = {
+    signData: {
+      type: Object,
+      twoWay: true
+    }
+  }
+
+  components = {}
+
+  mixins = [mixin]
+
+  data = {
+    total: 0, // 牛币剩余数量
+    continuity: 1, // 显示这个组件就代表当天签到成功所以默认 连续签到天数为1
+    nowGetMoneyNum: 0, // 今天获取牛币的数量
+    tomorrowNum: 0, // 明天领取牛币数量
+    signList: [
+      {
+        day: 1,
+        type: 'gold'
+      },
+      {
+        day: 2,
+        type: 'gold'
+      },
+      {
+        day: 3,
+        type: 'gift'
+      },
+      {
+        day: 4,
+        type: 'gold'
+      },
+      {
+        day: 5,
+        type: 'gift'
+      },
+      {
+        day: 6,
+        type: 'gold'
+      },
+      {
+        day: 7,
+        type: 'gift'
+      }
+    ]
+  }
+
+  computed = {}
+
+  methods = {
+    sign() {
+      this.$emit('sign')
+    }
+  }
+  watch = {
+    signData (newValue, oldValue) {
+      this.setSignsTatus()
+    }
+  }
+  events = {}
+  setSignsTatus () {
+    let userSignInfo = this.signData
+    let rule = userSignInfo.rule
+    let times = this.getweekDay()
+    this.tomorrowNum = times === 6 ? rule[0] : rule[times + 1] // 更新明天获取牛币的数量
+    this.nowGetMoneyNum = rule[times] // 更新今天获取牛币的数量
+    for (let i = 0; i < userSignInfo.completeProgress.length; i++) {
+      if (i > 0 && i === times) {
+        break
+      }
+      const element = userSignInfo.completeProgress[i]
+      if (Number(element)) {
+        this.signList[i].type = 'in'
+        ++this.continuity
+      } else {
+        this.continuity = 1
+      }
+    }
+    this.total = parseInt(wepy.getStorageSync('integralTotal') + Number(rule[times]))
+    this.signList[times].type = 'in' // 改变签到当天的状态
+    this.$apply()
+  }
+  onLoad() {
+  }
+}
+</script>

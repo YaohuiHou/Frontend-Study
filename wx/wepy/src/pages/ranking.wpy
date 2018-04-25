@@ -1,0 +1,401 @@
+<template>
+  <view class="ranking">
+    <scroll-view scroll-y lower-threshold='100' class="content">
+      <view class="title">
+        <text>点赞总数排名，每周一24:00更新</text>
+      </view>
+      <view class="rank-list">
+        <!-- 榜首 -->
+        <view class="champion">
+          <view class="item item{{index}}" wx:for="{{rankings}}" wx:key="{{index}}" wx:if="{{index<3}}">
+            <view class="header">
+              <image src="{{item.img}}"></image>
+              <view class="num">
+                <text>{{item.num}}</text>
+              </view>
+            </view>
+            <text class="name">{{item.name}}</text>
+            <text class="zan">获赞：{{item.zan}}</text>
+          </view>
+        </view>
+        <!-- 只展示前三名 -->
+        <!-- <view wx:for="{{rankings}}" wx:key="{{index}}" wx:if="{{index>3}}" class="rank">
+          <view class="left-info">
+            <text class="num">{{item.num}}</text>
+            <image src="{{item.img}}"></image>
+            <text class="name">{{item.name}}</text>
+          </view>
+          <text class="zan">获赞：{{item.zan}}</text>
+        </view> -->
+      </view>
+    </scroll-view>
+    <view class="footer">
+      <text class="me">我</text>
+      <image src="https://s.kcimg.cn/wechat/vanca/truck_log.png" class="userinfo"></image>
+      <view class="info">
+        <text class="name">田字格</text>
+        <view class="hint">
+          <text>当前第</text>
+          <text class="num">10213</text>
+          <text>名，距离前50名差</text>
+          <text class="num">113</text>
+          <text>个赞</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<style lang="less" scoped>
+  .ranking{
+    background: #FF9400 url('https://s.kcimg.cn/wechat/vanca/rankimg-bg.png') no-repeat 50% 100%;
+    background-size: contain;
+    .content{
+      height: calc(~'100vh - 60px');
+      padding: 0 16px;
+      box-sizing: border-box;
+      .title{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text{
+          font-size: 14px;
+          color: #FFF;
+          line-height: 22px;
+          position: relative;
+          &:before,&:after{
+            content: "";
+            position: absolute;
+            top: 10px;
+            width: 16px;
+            height: 1px;
+            background: #fff;
+          }
+          &:before{
+            left: -24px;
+          }
+          &:after{
+            right: -24px;
+          }
+        }
+      }
+      .rank-list{
+        background: #FFFFFF;
+        border-radius: 4px;
+        margin: 64px 0 16px;
+        image{
+          width: 32px;
+          height: 32px;
+        }
+        .champion{
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          position: relative;
+          .item{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 12px;
+            width: calc(~'50% - 59px');
+            .header{
+              position: relative;
+              padding-top: 30px;
+              padding-bottom: 20px;
+              margin: 0 30rpx;
+              image{
+                width: 55px;
+                height: 55px;
+              }
+              .num{
+                position: absolute;
+                left: 50%;
+                bottom: 15px;
+                width: 20px;
+                height: 20px;
+                transform: translateX(-50%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                &:before{
+                  content: "\e7c1";
+                  font-family: 'vanca';
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 20px;
+                  height: 20px;
+                  font-size: 20px;
+                }
+                text{
+                  font-size: 12px;
+                  color: #fff;
+                  position: relative;
+                  z-index: 1;
+                }
+              }
+            }
+            .name{
+              font-size: 14px;
+              line-height: 24px;
+              color: #353535;
+            }
+            .zan{
+              font-size: 12px;
+              color: #FF9400;
+              line-height: 18px;
+            }
+            &0{
+              position: absolute;
+              left: 50%;
+              top: -36px;
+              width: 117px;
+              background: #fff;
+              padding-bottom: 0;
+              transform: translate3d(-50%, 0, 0);
+              border-radius: 4px;
+              .header{
+                position: relative;
+                padding-top: 34px;
+                padding-bottom: 24px;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                &:before{
+                  content: "\e7bf";
+                  font-family: 'vanca';
+                  position: absolute;
+                  left: 50%;
+                  top: 9px;
+                  color: #FFD83A;
+                  width: 30px;
+                  height: 20px;
+                  transform: translateX(-50%);
+                }
+                image{
+                  width: 80px;
+                  height: 80px;
+                }
+                .num{
+                  width: 30px;
+                  height: 30px;
+                  bottom: 10px;
+                  &:before{
+                    color: #FFD83A;
+                    width: 30px;
+                    height: 30px;
+                    font-size: 30px;
+                  }
+                  text{
+                    font-size: 18px;
+                  }
+                }
+              }
+              .name{
+                font-size: 18px;
+                line-height: 28px;
+              }
+              .zan{
+                font-size: 12px;
+                line-height: 18px;
+              }
+            }
+            &1{
+              .header .num:before{
+                color: #60DF96;
+              }
+            }
+            &2{
+              .header .num:before{
+                color: #84ADFF;
+              }
+            }
+          }
+        }
+        .rank{
+          height: 56px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1rpx solid rgba(23,24,26,0.12);
+          .left-info{
+            display: flex;
+            align-items: center;
+            .num{
+              width: 34px;
+              text-align: center;
+              font-size: 16px;
+              color: #B2B2B2;
+            }
+            image{
+              width: 32px;
+              height: 32px;
+              margin-right: 12px;
+            }
+            .name{
+              font-size: 14px;
+              color: #353535;
+            }
+          }
+          .zan{
+            font-size: 14px;
+            color: #B2B2B2;
+            padding-right: 12px;
+          }
+        }
+      }
+    }
+    .footer{
+      height: 60px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0 16px;
+      .me{
+        font-size: 16px;
+        color: #888;
+      }
+      image{
+        width: 32px;
+        height: 32px;
+        margin: 0 8px;
+      }
+      .info{
+        display: flex;
+        flex-direction: column;
+        .name{
+          font-size: 16px;
+          color: #353535;
+          line-height: 24px;
+        }
+        .hint{
+          font-size: 12px;
+          color: #B2B2B2;
+          line-height: 18px;
+          .num{
+            color: #FF9400;
+          }
+        }
+      }
+    }
+  }
+</style>
+
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '达人排行榜',
+    backgroundColorTop: '#FF9400',
+    enablePullDownRefresh: false
+  }
+  components = {
+  }
+
+  mixins = [mixin]
+
+  data = {
+    rankings: [
+      {
+        num: '1',
+        name: '王小姐',
+        zan: '1231',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '2',
+        name: '王小',
+        zan: '1231',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '3',
+        name: '王小姐',
+        zan: '1231',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '4',
+        name: '王姐',
+        zan: '1231',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '5',
+        name: '詹三',
+        zan: '1231',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '6',
+        name: '李大嘴',
+        zan: '456',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '7',
+        name: '王小姐',
+        zan: '678',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '8',
+        name: '打野',
+        zan: '679',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '9',
+        name: '侯爷',
+        zan: '786',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '10',
+        name: '后裔',
+        zan: '121',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '10',
+        name: '后裔',
+        zan: '121',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '10',
+        name: '后裔',
+        zan: '121',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '10',
+        name: '后裔',
+        zan: '121',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '10',
+        name: '后裔',
+        zan: '121',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      },
+      {
+        num: '10',
+        name: '后裔',
+        zan: '121',
+        img: 'https://s.kcimg.cn/wechat/vanca/truck_log.png'
+      }
+    ]
+  }
+
+  methods = {
+
+  }
+}
+</script>

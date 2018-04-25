@@ -1,0 +1,301 @@
+
+<style lang="less">
+page {
+  width: 100%;
+  background: rgb(244, 244, 244);
+  box-sizing: border-box;
+  padding-bottom: 50px;
+  box-sizing: border-box;
+}
+.container {
+  justify-content: flex-start;
+  overflow-y: scroll;
+}
+image {
+  display: block;
+}
+.item {
+  margin: 40rpx 64rpx 0 32rpx;
+  padding-left: 104rpx;
+  position: relative;
+  max-width: 550rpx;
+  overflow: hidden;
+  &:last-child {
+    margin-bottom: 40rpx;
+  }
+  .icon {
+    position: absolute;
+    top: 0;
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: 50%;
+  }
+  .title {
+    font-size: 24rpx;
+    color: #576B95;
+    line-height: 32rpx;
+  }
+  .card {
+    border-radius:4px;
+    padding:24rpx;
+    margin-top:8rpx;
+    box-sizing:border-box;
+    position:relative;
+    max-width:550rpx;
+    background: #fff;
+    font-size: 0;
+    &::before {
+      content:"";
+      position:absolute;
+      top:34rpx;
+      width:20rpx;
+      height:20rpx;
+      background:#fff;
+      transform:rotate(45deg);
+    }
+    .card-title {
+      font-size:32rpx;
+      color:#353535;
+      line-height:48rpx;
+      text-align:left;
+      word-break: break-all;
+    }
+    .card-picture {
+      margin-top:16rpx;
+      width: 502rpx;
+    }
+  }
+}
+.item-other {
+  .icon {
+    left: 0;
+  }
+  .card {
+    float: left;
+    &::before {
+      left:-9rpx;
+    }
+  }
+}
+.item-me {
+  padding-left: 0;
+  padding-right: 104rpx;
+  margin-right: 32rpx;
+  margin-left: 64rpx;
+  float: right;
+  .icon {
+    right: 0;
+  }
+  .title {
+    display: block;
+    text-align: right;
+  }
+  .card {
+    float:right;
+    background:#A2E65B;
+    text-align:left;
+
+    &::before {
+      right: -9rpx;
+      background: #A2E65B;
+    }
+  }
+}
+.scroll-container {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.toReply {
+  background: #FFFFFF;
+  box-shadow: 0 -4rpx 8rpx 0 rgba(0,0,0,0.06);
+  box-sizing: border-box;
+  padding: 14rpx 16rpx;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  .toReply-btn {
+    background: rgba(178,178,178,0.10);
+    border: 1rpx solid rgba(53,53,53,0.10);
+    border-radius: 8rpx;
+    display: block;
+    line-height: 72rpx;
+    font-size: 32rpx;
+    color: #888888;
+    letter-spacing: 0;
+    text-indent: 24rpx;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <loadPage wx:if="{{loading}}"></loadPage>
+    <view id="header">
+      <myHeader :info.sync="info"></myHeader>
+    </view>
+
+    <scroll-view wx:if="{{!loading}}" class="scroll-container" style="height: {{scrollHeight}}" scroll-into-view="{{scrollToViewId}}" scroll-y bindscrolltoupper="toupper">
+      <view style="overflow: hidden;" wx:for="{{info.replies}}" wx:item="item" wx:index="index" wx:key="index" id="id{{index+1}}">
+        <view class="item {{item.isMe ? 'item-me' : 'item-other'}}">
+          <image class="icon" src="{{item.avatar}}"></image>
+          <view class="title">{{item.nickname}}</view>
+          <view class="card">
+            <text class="card-title">{{item.content}}</text>
+            <image class="card-picture" mode='widthFix' src="{{item}}" wx:for="{{item.images}}" wx:item="item" wx:index="index" wx:key="index"></image>
+          </view>
+        </view>
+      </view>
+      <view id='scrollTofooter' style="height:10px"></view>
+    </scroll-view>
+
+    <navigator class="toReply" url="toReplay?id={{pid}}&commentId={{commentId}}">
+      <view class="toReply-btn">发表评论...</view>
+    </navigator>
+    <!-- 返回主页按钮 -->
+    <goBack></goBack>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import myHeader from '../components/chatGroup/header'
+import mixin from '../mixins'
+import loadPage from '../components/public/loadPage'
+import goBack from '@/components/public/goBack'
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '讨论组'
+  }
+  components = {
+    myHeader,
+    loadPage,
+    goBack
+  }
+
+  mixins = [mixin]
+
+  data = {
+    loading: true,
+    scrollHeight: '',
+    pid: '',
+    commentId: '',
+    page: 0,
+    info: {},
+    openid: '',
+    showTips: false,
+    scrollY: true,
+    scrollToViewId: '',
+    scrollLock: true
+  }
+
+  computed = {}
+
+  methods = {
+    async toupper() {
+      if (this.showTips || !this.scrollLock) {
+        return
+      }
+      this.scrollLock = this.scrollY = false
+      let loadMoreRes = await this.getGroupData()
+      this.scrollLock = this.scrollY = true
+      let replies = this.info.replies
+      this.info.replies = [...loadMoreRes, ...replies]
+      this.$apply()
+    }
+  }
+
+  events = {}
+
+  // 获取myHeader组件节点的高度
+  queryHeaderHeight() {
+    setTimeout(() => {
+      wepy
+        .createSelectorQuery()
+        .select('#header')
+        .fields(
+        {
+          dataset: true,
+          size: true,
+          scrollOffset: true,
+          properties: ['scrollX', 'scrollY']
+        },
+          res => {
+            let headerHeight = res.height + 50
+            this.scrollHeight = this.height - headerHeight + 'px'
+            this.loading = false
+            this.$apply()
+          }
+        )
+        .exec()
+    }, 200)
+  }
+
+  onLoad(option) {
+    this.pid = option.pid
+    this.commentId = option.commentId
+    this.height = wepy.getSystemInfoSync().windowHeight
+    this.queryHeaderHeight()
+  }
+
+  // 获取讨论组数据
+  async getGroupData() {
+    let resoult = []
+    try {
+      let res = await wepy.request({
+        url: `${this.host}/getSingleComment`,
+        data: {
+          cid: this.commentId,
+          page: this.page,
+          openid: this.openid
+        }
+      })
+
+      let { data: resData, statusCode } = res
+      if (statusCode === 200) {
+        let { status, data } = resData
+        if (!status) {
+          let { nextPageToken, replies } = data
+          this.page = nextPageToken
+          if (!nextPageToken) {
+            this.showTips = true
+          }
+          replies.forEach(item => {
+            if (item.openid === this.openid) {
+              item.isMe = true
+            }
+          })
+          replies.reverse()
+          resoult = data
+        }
+      }
+    } catch (error) {}
+    return resoult
+  }
+
+  // 重置storage中reply状态
+  resetReplyState() {
+    if (wepy.getStorageSync('reply')) {
+      wepy.removeStorageSync('reply')
+    }
+  }
+
+  async onShow() {
+    try {
+      this.resetReplyState()
+      this.page = 0
+      this.openid = await this.getOpenid()
+      let res = await this.getGroupData()
+      this.info = res
+      // let lastId = this.info.replies.length
+      // this.scrollToViewId = `id${lastId}`
+      setTimeout(() => {
+        this.scrollToViewId = 'scrollTofooter'
+        this.$apply()
+      }, 300)
+      this.$apply()
+    } catch (error) {}
+  }
+}
+</script>

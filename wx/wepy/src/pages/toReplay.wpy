@@ -1,0 +1,292 @@
+<style scoped lang="less">
+.post-form{
+  padding-bottom: 120rpx;
+  box-sizing: border-box;
+  .message {
+     padding: 16rpx 32rpx;
+     background: #fff;
+     .textarea {
+      min-height: 270rpx;
+      position: relative;
+       textarea{
+          margin-bottom: 32rpx;
+          width: 100%;
+       }
+     }
+     .imgs{
+        flex-direction:row;
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+       .images{
+          width: 160rpx;
+          height: 160rpx;
+          position: relative;
+          margin-right: 15rpx;
+          margin-bottom: 20rpx;
+          &:nth-child(4n){
+            margin-right: 0;
+          }
+          image{
+            width: 100%;
+            height: 100%;
+            border-radius: 8rpx;
+          }
+          .close{
+              position: absolute;
+              width: 18px;
+              height: 18px;
+              top:-5px;
+              right: -5px;
+              z-index: 10;
+          }
+        }
+     }
+  }
+  .btn-area{
+    background: #F8F8F8;
+    box-shadow: 0 -1px 6px 0 rgba(0,0,0,0.05);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 14rpx 16rpx;
+    height: 100rpx;
+    box-sizing: border-box;
+    z-index: 10;
+    .submit{
+      background: rgba(255,119,0,1);
+      border-radius: 4px;
+      width: 68px;
+      height: 38px;
+      padding: 0;
+      text-align: center;
+      line-height: 38px;
+      color: #fff;
+      float: right;
+      &.disabled{
+        background: rgba(255,119,0,0.40);
+      }
+    }
+  }
+}
+.cover {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+</style>
+<template>
+  <view class="container">
+    <form bindsubmit="formSubmit" report-submit class="post-form">
+      <view class="message">
+        <!-- 避免手机发帖以后提示任务完成按钮倍textarea遮挡的问题 发帖成功以后要隐藏文本框 -->
+        <view class="textarea" wx:if="{{!taskStatus.rulename}}">
+          <textarea name="content"
+            disabled="{{!submitLock}}"
+            style="height:{{wh}}px"
+            @input="changeMessage" maxlength="-1"
+            placeholder-style="font-size: 36rpx;line-height:40rpx;height:44px; color: rgba(53,53,53,0.40);" 
+            placeholder="你的评论是对他人的鼓励" maxlength="900" />
+        </view>
+        <view class="imgs">
+          <!-- 默认图 -->
+          <view class="images" wx:if="{{!forms.images.length}}" @tap="changeImg">
+            <image src="https://s.kcimg.cn/wechat/vanca/add_images.png"></image>
+          </view>
+          <!-- 预览图片 -->
+          <view class="images" wx:for="{{forms.images}}" wx:key="{{index}}">
+            <image src="{{item}}"></image>
+            <view class="close">
+              <image src="https://s.kcimg.cn/wechat/vanca/close.png" @tap="removeImg" data-item="{{item}}"></image>
+            </view>
+          </view>
+          <!-- 超过1张小于6张出现 -->
+          <view class="images add" @tap="changeImg" wx:if="{{forms.images.length && forms.images.length < 6}}">
+            <image src="https://s.kcimg.cn/wechat/vanca/add.png"></image>
+          </view>
+        </view>
+      </view>
+      <view class="btn-area">
+        <button class="submit disabled" wx:if="{{disabled}}">提交</button>
+        <button formType="submit" class="submit" wx:if="{{!disabled}}">提交</button>
+      </view>
+    </form>
+    <workSuccess wx:if="{{taskStatus.rulename}}" :taskObject.sync="taskStatus"></workSuccess>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import mixin from '../mixins'
+  import workSuccess from '../components/public/workSuccess'
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '发表评论'
+    }
+    components = {
+      workSuccess
+    }
+    events = {
+      closeWorkSuccess: $event => {
+        this.taskStatus = {}
+      }
+    }
+    mixins = [mixin]
+
+    data = {
+      replyTaskStatus: {}, // 获取发帖任务内容
+      taskStatus: {}, // 任务是否完成对象
+      wh: '',
+      commentId: '',
+      disabled: true,
+      addressName: '请选择位置',
+      submitLock: true,
+      forms: {
+        openid: '',
+        pid: '',
+        content: '',
+        images: [],
+        formId: '',
+        originContent: '',
+        originUid: ''
+      }
+    }
+    computed = {
+    }
+    finishTask () {
+      if (this.replyTaskStatus.autoReceive && this.replyTaskStatus.completeProgress[0] < this.replyTaskStatus.dayCount) {
+        wepy.request({
+          url: `${this.host}/completeTask`,
+          data: {
+            openid: this.forms['openid'],
+            project: this.replyTaskStatus.project
+          },
+          method: 'post'
+        }).then((res) => {
+          let {status} = res.data
+          let jsgroup = wepy.getStorageSync('isJoinGroup')
+          this.getTaskList(this.forms['openid'], jsgroup.id)
+          if (!status) {
+            this.taskStatus = this.replyTaskStatus
+          } else {
+            this.taskStatus = {}
+          }
+          this.$apply()
+        })
+      } else {
+        wepy.navigateBack({
+          delta: 1
+        })
+      }
+    }
+    submit (images) {
+      let formsBackup = {...this.forms}
+      formsBackup['images'] = images
+      // 如果有commentID是针对楼层的回复
+      if (this.commentId) {
+        formsBackup.cid = this.commentId
+        this.$apply()
+      }
+      wepy.request({
+        url: `${this.host}/pushComment`,
+        data: formsBackup,
+        method: 'POST'
+      }).then(res => {
+        this.submitLock = true
+        wepy.hideLoading()
+        let {status} = res.data
+        if (!status) {
+          try {
+            wepy.setStorageSync('reply', '1')
+          } catch (error) {
+          }
+          wepy.showToast({
+            title: '回复成功',
+            icon: 'success',
+            duration: 2000
+          }).then(res => {
+            setTimeout(() => {
+              this.finishTask()
+            }, 1000)
+          })
+        } else {
+          wepy.showToast({
+            title: '回复失败',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      })
+    }
+    methods = {
+      // 改变内容
+      changeMessage (event) {
+        if (event.detail.value.trim() !== '') {
+          this.forms['content'] = event.detail.value.trim()
+          this.disabled = false
+        } else {
+          this.disabled = true
+        }
+        this.$apply()
+      },
+      // 选择图片
+      changeImg (event) {
+        if (!this.submitLock) {
+          return false
+        }
+        let nowLen = this.forms['images'].length
+        let remain = 6 - nowLen
+        wepy.chooseImage({
+          count: remain, // 默认9
+          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera']// 可以指定来源是相册还是相机，默认二者都有
+        }).then(res => {
+          this.forms['images'] = this.forms['images'].concat(res.tempFilePaths)
+          this.$apply()
+        })
+      },
+      // 删除图片
+      removeImg (e) {
+        let item = e.target.dataset.item
+        let index = this.forms['images'].indexOf(item)
+        this.forms['images'].splice(index, 1)
+        this.$apply()
+      },
+      formSubmit (e) {
+        if (!this.submitLock) {
+          return false
+        }
+        this.submitLock = false
+        let { formId } = e.detail
+        this.forms['formId'] = formId
+        this.disabled = true
+        wepy.showLoading({
+          title: '发表中'
+        })
+        if (this.forms.images.length) {
+          this.qiniuUploaderImg(this.forms.images, this.submit)
+        } else {
+          this.submit()
+        }
+      }
+    }
+    async onLoad(option) {
+      this.forms['openid'] = await this.getOpenid()
+      this.forms['pid'] = option.id
+      this.wh = wepy.getSystemInfoSync().windowHeight - 350
+      // 获取七牛云token
+      this.getToken()
+      this.commentId = option.commentId ? option.commentId : ''
+      if (option.originContent) {
+        this.forms['originContent'] = option.originContent.length >= 50 ? option.originContent.substring(0, 50) + '...' : option.originContent.substring(0, 50)
+      } else {
+        this.forms['originContent'] = ''
+      }
+      // 获取回复任务状态
+      this.replyTaskStatus = this.getOnlyTask('360che_tuan_task_reply') || {}
+      this.$apply()
+    }
+  }
+</script>

@@ -1,0 +1,164 @@
+<template>
+  <view class="expert">
+    <view class="title">
+      <text>回帖总数排名，每周一24:00更新</text>
+    </view>
+    <repeat for="{{newest.list}}" key="index" index="index" item="item" >
+      <listItem :item="item" :index="index"></listItem>
+    </repeat>
+    <view class="load-end" wx:if="{{ newest.list.length }}">{{end ? '您已经到底啦~~': '正在加载中...'}}</view>
+    <netError wx:if="{{errorStatus}}" text=''></netError>
+  </view>
+</template>
+
+<style lang="less" scoped>
+  .expert{
+    background: #fff;
+  }
+  .load-end{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 28rpx;
+    padding: 26rpx 0;
+    text-align: center;
+    background: #fff;
+    width: 100%;
+  }
+  .title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0 4px;
+    text{
+      font-size: 14px;
+      color: #888;
+      line-height: 22px;
+      position: relative;
+      &:before,&:after{
+        content: "";
+        position: absolute;
+        top: 10px;
+        width: 16px;
+        height: 1px;
+        background: #888;
+      }
+      &:before{
+        left: -24px;
+      }
+      &:after{
+        right: -24px;
+      }
+    }
+  }
+</style>
+
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+import listItem from '../components/listItem'
+import netError from '../components/public/netError'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '达人周榜',
+    backgroundColorTop: '#FF9400',
+    enablePullDownRefresh: true
+  }
+  components = {
+    listItem: listItem,
+    netError: netError
+  }
+
+  events = {
+
+  }
+
+  mixins = [mixin]
+
+  data = {
+    errorStatus: 0,
+    newest: { // 最新的帖子数据
+      list: [],
+      loading: false,
+      page: 1,
+      end: false
+    }
+  }
+
+  methods = {
+
+  }
+  onReachBottom() {
+    this.getData(this.newest)
+  }
+
+  // onPullDownRefresh() {
+  //   this.newest.loading = false
+  //   this.getData(this.newest, null, 'refresh')
+  // }
+
+  // 推荐
+  async getData(name, isRecommend, option) {
+    if (name.loading) {
+      return false
+    }
+    name.loading = 1
+    try {
+      let json = {
+        openid: this.openid,
+        size: 12,
+        page: name.page
+      }
+      if (isRecommend) {
+        json.isRecommend = isRecommend
+      }
+      let res = await wepy.request({
+        url: `${this.host}/home`,
+        data: json
+      })
+      this.errorStatus = 0
+      const { status, data } = res.data
+      if (!status) {
+        let datas = this.picking(data)
+        if (option === 'refresh') {
+          name.loading = false
+          name.list = datas
+          wepy.stopPullDownRefresh()
+        } else {
+          name.list = name.list.concat(datas)
+          if (datas.length < 10) {
+            name.end = true
+          } else {
+            name.loading = 0
+          }
+        }
+        name.page += 1
+      }
+      this.$apply()
+    } catch (error) {
+      this.errorStatus = 1
+    }
+  }
+
+  picking(data) {
+    if (data && data.length) {
+      data.forEach(element => {
+        if (element.images) {
+          element.img = element.images[0]
+        }
+        if (element.img && element.img.indexOf('http://http') > -1) {
+          element.img = element.img.replace(/http:\/\//, '')
+        }
+      })
+    }
+    return data
+  }
+
+  async onLoad() {
+    this.openid = await this.getOpenid()
+    await this.getData(this.newest)
+    this.$apply()
+  }
+}
+</script>

@@ -1,0 +1,96 @@
+<style lang="less" scoped>
+  .skeleton{
+    position: fixed;
+    z-index: 100;
+    background: #fff;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 8px 16px;
+    box-sizing: border-box;
+  }
+  .title view{
+    background: #F0F0F0;
+    height: 20px;
+    margin-top: 8px;
+  }
+  .line{
+    width: 140px;
+    height: 12px;
+    margin: 24px 0 12px;
+    background: #F0F0F0;
+  }
+  .keleton{
+    view{
+      background: #F0F0F0;
+      height: 12px;
+      width: 100%;
+      margin-top: 12px;
+    }
+    .last{
+      width: 253px;
+    }
+  }
+  .keleton-two, .keleton-three{
+    margin-top: 24px;
+    view{
+      background: #F3F3F3;
+      height: 12px;
+      width: 100%;
+      margin-top: 12px;
+    }
+    .two{
+      width: 80%;
+    }
+    .three{
+      background: #F7F7F7;
+      width: 100%;
+    }
+    .fore{
+      background: #F7F7F7;
+      width: 70%;
+    }
+  }
+  .keleton-three{
+    view{background: #F7F7F7;}
+    .two,.three,.fore{background: #FAFAFA;}
+  }
+</style>
+<template>
+  <view class="skeleton">
+    <view class="title">
+      <view></view>
+      <view></view>
+    </view>
+    <view class="line"></view>
+    <view class="keleton">
+      <view></view>
+      <view></view>
+      <view class="last"></view>
+    </view>
+    <view class="keleton-two">
+      <view></view>
+      <view class="two"></view>
+      <view class="three"></view>
+      <view class="fore"></view>
+    </view>
+    <view class="keleton-three">
+      <view></view>
+      <view class="two"></view>
+      <view class="three"></view>
+      <view class="fore"></view>
+    </view>
+  </view>  
+</template>
+<script>
+  import wepy from 'wepy'
+  export default class Index extends wepy.component {
+    data = {
+    }
+    watch = {
+    }
+    methods = {
+    }
+  }
+</script>

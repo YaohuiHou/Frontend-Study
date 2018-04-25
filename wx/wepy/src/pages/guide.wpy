@@ -1,0 +1,151 @@
+<template>
+  <view class="guide">
+    <view class="join-content">
+      <view class="first">欢迎您，加入我们</view>
+      <view class="second">加入小组后</view>
+      <view class="third">你可以即刻进行<text>发帖回帖</text></view>
+      <view class="forth">为了维护小组<text>更活跃的气氛</text></view>
+      <view class="fifth">每位卡友“只能”加入一个小组</view>
+      <view class="forth">建议选择你的常驻地区小组</view>
+    </view>
+
+    <view class="joinlist">
+      <view class="group">
+        <image src="https://s.kcimg.cn/wechat/vanca/truck_log.png"></image>
+        <view class="info">
+          <view class="left">
+              <text class="h3">杉德卡兄弟团</text>
+              <view class="something">
+                <text>帖子:4865</text>
+                <text>帖子:4865</text>
+              </view>
+          </view>
+          <button>加入</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<style lang="less" scoped> 
+  .guide{
+    background: #fff;
+    min-height: 100vh;
+    .joinlist{
+      padding: 0 24rpx;
+      .group{
+        height: 80px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 15px 12px 15px 16px;
+        background: #FFFFFF;
+        border: 1px solid #FF9400;
+        box-shadow: 0 2px 6px 0 rgba(255,148,0,0.20);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        image{
+          width: 50px;
+          height: 50px;
+          margin-right: 12px;
+        }
+        .info{
+          width: calc(~'100% - 62px');
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          .left{
+            display: flex;
+            flex-direction: column;
+          }
+          .h3{
+            font-size: 18px;
+            color: #353535;
+            line-height: 18px;
+            margin-bottom: 12px;
+          }
+          .something{
+            display: flex;
+            justify-content: space-between;
+            text{
+              font-size: 14px;
+              color: #888888;
+              line-height: 14px;
+            }
+          }
+        }
+        button{
+          width: 64px;
+          height: 28px;
+          line-height: 28px;
+          text-align: center;
+          border-radius: 14px;
+          font-size: 14px;
+          color: #FFFFFF;
+          margin: 0;
+          box-sizing: border-box;
+          background-image: linear-gradient(44deg, #FFB200 0%, #FD7B1E 100%);
+        }
+      }
+    }
+  }
+  .join-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .join-content view{
+    font-size: 32rpx;
+    color: #353535;
+    line-height: 32rpx;
+  }
+  .join-content .first{
+    font-weight: bold;
+    margin-top: 40rpx;
+    font-size: 64rpx;
+    color: #FF9400;
+    line-height: 64rpx;
+  }
+  .join-content .second,.join-content .forth{
+    margin-top: 48rpx;
+  }
+  .join-content .third{
+    margin-top: 24rpx;
+  }
+  .join-content .fifth{
+    margin-top: 60rpx;
+    font-size: 36rpx;
+    color: #FF9400;
+    font-weight: bold;
+  }
+  .join-content text{
+    margin-left: 16rpx;
+    font-size: 36rpx;
+    color: #FF9400;
+    font-weight: bold;
+  }
+</style>
+
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '选择小组',
+    backgroundColorTop: '#ffffff',
+    enablePullDownRefresh: false
+  }
+  components = {
+  }
+
+  mixins = [mixin]
+
+  data = {}
+}
+</script>

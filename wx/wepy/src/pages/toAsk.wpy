@@ -1,0 +1,391 @@
+<style scoped lang="less">
+.info-list{
+  margin-top: 8px;
+  background: #fff;
+  .list{
+    padding: 8px 8px 8px 48px;
+    position: relative;
+    height: 42px;
+    font-size: 12px;
+    color: #B2B2B2;
+    line-height: 18px;
+    &:after{
+      content: " ";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 0;
+      height: 1px;
+      border-bottom: 1px solid rgba(23,24,26,.12);
+      color: rgba(23,24,26,.12);
+      -webkit-transform-origin: 0 100%;
+      transform-origin: 0 100%;
+      -webkit-transform: scaleY(0.5);
+      transform: scaleY(0.5);
+    }
+    &:last-child::after{
+      border: none;
+      height: 0;
+    }
+    &::before{
+      font-family: 'vanca';
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      font-size: 16px;
+      display: block;
+      color: #B2B2B2;
+      content:'\e78c';
+      position: absolute;
+      left: 8px;
+      top:13px;
+    }
+    .name{
+      font-size: 16px;
+      color: #353535;
+      letter-spacing: 0.3px;
+      line-height: 24px;
+      height: 24px;
+      overflow: hidden;white-space: nowrap;text-overflow: ellipsis;
+    }
+  }
+  .group::before{
+    content: '\e7bb';
+  }
+}
+.foms-wrap{
+    padding: 0 16px 0px;
+    background: #fff;
+  .title{
+    padding: 8px 0;
+    font-size: 20px;
+    color: #353535;
+    line-height: 30px;
+    position: relative;
+    &:after{
+      content: " ";
+      position: absolute;
+      left: -16px;
+      right: -16px;
+      bottom: 0;
+      height: 1px;
+      border-bottom: 1px solid rgba(23,24,26,.12);
+      transform-origin: 0 100%;
+      transform: scaleY(0.5);
+    }
+  }
+  .textarea{
+    min-height:120px;
+    padding: 8px 0;
+    box-sizing: border-box;
+    textarea{
+      width: 100%;
+      font-size: 18px;
+      line-height: 28px;
+    }
+  }
+  .imgs{
+      margin-top: 5px;
+      padding-bottom: 6px;
+      flex-direction:row;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      .images{
+        width: 160rpx;
+        height: 160rpx;
+        position: relative;
+        margin-right: 15rpx;
+        margin-bottom: 20rpx;
+        &:nth-child(4n){
+          margin-right: 0;
+        }
+        image{
+          width: 100%;
+          height: 100%;
+          border-radius: 8rpx;
+        }
+        .close{
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            top:-5px;
+            right: -5px;
+            z-index: 10;
+        }
+      }
+    }
+  .footer{
+    margin-bottom: 16px;
+    display: flex;
+    height:32px;
+    align-items: center;
+    .text{ 
+      flex: 1;
+      font-size: 16px;
+      color: #888888;
+      &::before{
+        content: '\e7ba';
+        font-family: 'vanca';
+        font-size: 16px;
+        margin-right: 5px;
+      }
+    }
+    .submit{
+      width: 64px;
+      height: 32px;
+      line-height: 32px;
+      background: #FF9400;
+      border-radius: 4px;
+      font-size: 16px;
+      color: #FFFFFF;
+    }
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <form bindsubmit="formSubmit" report-submit class="post-form">
+      <!-- 初始化 -->
+      <initializeAsk wx:if="{{initialize}}"></initializeAsk>
+      <!-- 具体表单提交 -->
+      <view class="foms-wrap" wx:else>
+        <view class="title">{{forms.title}}</view>
+        <view class="textarea">
+          <textarea name="message"
+            @input="changeDes"
+            placeholder-style="color: rgba(53,53,53,0.20);"
+            auto-height
+            placeholder="问题描述（选填）" maxlength="240" />
+        </view>
+        <view class="footer">
+          <text class="text" @tap="changeImg">添加图片</text>
+          <button formType="submit"  class="submit">提交</button>
+        </view>
+        <view class="imgs">
+           <!-- 预览图片 -->
+          <view class="images" wx:for="{{forms.images}}" wx:key="{{index}}">
+            <image src="{{item}}" mode="aspectFill"></image>
+            <view class="close">
+              <image src="https://s.kcimg.cn/wechat/vanca/close.png" @tap="removeImg" data-item="{{item}}"></image>
+            </view>
+          </view>
+        </view>
+      </view>
+      <!-- 地址和小组 -->
+        <view class="info-list" wx:if="{{!initialize}}">
+          <view class="list address" @tap="changeaddress">
+            <view class="name">{{addressName}}</view>
+             <view>{{forms.address}}</view>
+          </view>
+          <view class="list group">
+            <view class="name">所属小组</view>
+            <view>{{forms.groupName}}</view>
+          </view>
+        </view>
+    </form>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+import initializeAsk from '../components/initializeAsk'
+var Bmap = require('../bmap-wx.js')
+var bmap
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '发求助',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTextStyle: 'black'
+  }
+  components = {
+    initializeAsk
+  }
+  mixins = [mixin]
+  data = {
+    initialize: true, // 初始化状态
+    wh: '',
+    submitLock: true,
+    addressName: '请选择位置',
+    forms: {
+      title: '',
+      message: '',
+      images: [],
+      openid: '',
+      pid: 0,
+      address: '详细地址',
+      longitude: '',
+      latitude: '',
+      formId: ''
+    }
+  }
+  events = {
+    changeTitle: (message, $event) => {
+      this.forms['title'] = message
+    },
+    nextShow: ($event) => {
+      this.initialize = false
+    }
+  }
+  computed = {}
+  submit(images) {
+    let formsBackup = { ...this.forms }
+    formsBackup['images'] = images
+    console.log(formsBackup)
+    wepy
+      .request({
+        url: `${this.host}/push`,
+        data: formsBackup,
+        method: 'POST'
+      })
+      .then(res => {
+        this.submitLock = true
+        wepy.hideLoading()
+        let { status, pid, project } = res.data
+        if (!status) {
+          wepy.showToast({
+            title: '发帖成功',
+            icon: 'success',
+            duration: 2000
+          }).then(res => {
+            try {
+              wepy.setStorageSync('toask', '1')
+              wepy.redirectTo({
+                url: `topicDetails?id=${pid}&project=${project}`
+              })
+            } catch (error) {}
+          })
+        } else {
+          wepy.showToast({
+            title: '发帖失败',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      })
+  }
+ //  验证是否授权
+  checkAddress() {
+    wepy.getSetting().then(res => {
+      if (!res.authSetting['scope.userLocation']) {
+        wepy.checkSession().then(res => {
+          wepy.openSetting().then(res => {
+            this.getlocation()
+          })
+        })
+      }
+    })
+  }
+  methods = {
+    // 填写描述
+    changeDes(event) {
+      this.forms['message'] = event.detail.value
+    },
+    // 选择图片
+    changeImg(event) {
+      if (this.forms['images'].length > 8) {
+        return
+      }
+      let nowLen = this.forms['images'].length
+      let remain = 9 - nowLen
+      wepy
+        .chooseImage({
+          count: remain, // 默认9
+          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'] // 可以指定来源是相册还是相机，默认二者都有
+        })
+        .then(res => {
+          this.forms['images'] = this.forms['images'].concat(res.tempFilePaths)
+          this.$apply()
+        })
+    },
+
+    // 删除图片
+    removeImg(e) {
+      let item = e.target.dataset.item
+      let index = this.forms['images'].indexOf(item)
+      this.forms['images'].splice(index, 1)
+      this.$apply()
+    },
+    // 选择地址
+    changeaddress(event) {
+      if (!this.submitLock) {
+        return
+      }
+      wepy
+        .chooseLocation()
+        .then(res => {
+          this.forms['address'] = res.address
+          this.forms['longitude'] = res.longitude
+          this.forms['latitude'] = res.latitude
+          this.addressName = res.name
+          this.$apply()
+        })
+        .catch(res => {
+          this.checkAddress()
+        })
+    },
+    formSubmit(e) {
+      if (!this.submitLock) {
+        return false
+      }
+      this.submitLock = false
+      wepy.showLoading({
+        title: '发表中'
+      })
+      let { formId } = e.detail
+      this.forms['formId'] = formId
+      this.disabled = true
+      wepy.showLoading({
+        title: '发表中'
+      })
+      if (this.forms.images.length) {
+        this.qiniuUploaderImg(this.forms.images, this.submit)
+      } else {
+        this.submit()
+      }
+    }
+  }
+  //  获取位置
+  getlocation() {
+    wepy
+      .getLocation({
+        type: 'gcj02'
+      })
+      .then(res => {
+        this.forms['longitude'] = res.longitude
+        this.forms['latitude'] = res.latitude
+        // 发起regeocoding检索请求
+        bmap.regeocoding({
+          location: res.latitude + ',' + res.longitude,
+          success: res => {
+            this.forms['address'] = res.wxMarkerData[0].address
+            this.addressName = res.wxMarkerData[0].desc
+            this.$apply()
+          }
+        })
+      })
+      .catch(res => {
+        this.addressName = '开启你的定位权限吧！'
+        this.$apply()
+      })
+  }
+  async onLoad(option) {
+    this.forms['groupId'] = option.id
+    this.forms['groupName'] = option.groupName
+    this.forms['type'] = 'sos'
+    // this.forms['type'] = 'topic'
+    this.forms['openid'] = await this.getOpenid()
+    // 获取七牛云token
+    this.getToken()
+    // 实例化百度地图
+    bmap = new Bmap.BMapWX({
+      ak: '4hId31z7NstzMsvNfFEh620oF4Dt8XZi'
+    })
+    this.getlocation()
+    this.$apply()
+  }
+}
+</script>

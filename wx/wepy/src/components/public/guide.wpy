@@ -1,0 +1,53 @@
+<style lang="less" scoped>
+  .background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.8);
+    z-index: 10;
+  }
+  .background .img{
+    width: 100%;
+    height: 100%;
+    padding: 20rpx;
+    box-sizing: border-box;
+  }
+  .img image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+<template>
+  <view class="background" @tap="closeGuide">
+    <view class="img">
+      <image src="https://s.kcimg.cn/wechat/vanca/guide.png"></image>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+
+export default class Index extends wepy.component {
+  components = {}
+
+  mixins = [mixin]
+
+  data = {}
+
+  computed = {}
+
+  methods = {
+    closeGuide() {
+      this.$emit('closeGuide')
+    }
+  }
+
+  events = {}
+
+  onLoad() {}
+}
+</script>

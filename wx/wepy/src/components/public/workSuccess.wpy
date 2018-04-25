@@ -1,0 +1,111 @@
+<style lang="less" scoped>
+  .background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background-image: url(https://s.kcimg.cn/wechat/vanca/sign_light.png);
+    background-repeat: no-repeat;
+    background-position: 0 -80rpx;
+    background-color: rgba(0, 0, 0, .8);
+    background-size: 100% auto;
+  }
+  .sign-content{
+    width: 610rpx;
+    height: 448rpx;
+    padding-bottom:40rpx;
+    background: #fff;
+    border-radius: 12rpx;
+    margin: 0 70rpx;
+    margin-top: 256rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+     overflow: visible;
+  }
+  .sign-content .header-back{
+    margin-top: -80rpx;
+    width: 386rpx;
+    height: 252rpx;
+    background-image: url(https://s.kcimg.cn/wechat/vanca/sign_gold.png);
+    background-size: 100% 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .sign-content .header-back text{
+    width: 280rpx;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 166rpx;
+    font-size: 48rpx;
+    color: #fff;
+    line-height: 48rpx;
+  }
+  .sign-content .reward{
+    margin-top: 40rpx;
+    font-size: 40rpx;
+    color: #353535;
+    line-height: 40rpx;
+  }
+  .sign-content button{
+    margin-top: 48rpx;
+    width: 480rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    background-image: linear-gradient(44deg, #FFB200 0%, #FD7B1E 100%);
+    box-shadow: 0 4rpx 24rpx 0 rgba(251,156,51,0.40);
+    border-radius: 200rpx;
+    color: #fff;
+  }
+</style>
+<template>
+  <view class="background" @tap="closeWorkSuccess">
+    <view class="sign-content">
+      <view class="header-back">
+        <text>+{{taskObject.rule}} 牛币</text>
+      </view>
+      <view class="reward">已完成 {{taskObject.rulename}} 任务</view>
+      <!-- <view class="reward">已领取 {{integralTotal}}牛币奖励</view> -->
+      <button @tap="award" wx:if="{{!taskObject.project || taskObject.project != '360che_tuan_task_reply'}}">回到首页</button>
+      <button @tap="goback" wx:if="{{taskObject.project && taskObject.project == '360che_tuan_task_reply'}}">返回上一页</button>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class Index extends wepy.component {
+  props = {
+    taskObject: Object
+  }
+  components = {}
+
+  data = {
+  }
+
+  computed = {}
+
+  methods = {
+    closeWorkSuccess () {
+      this.$emit('closeWorkSuccess')
+    },
+    award() {
+      wepy.switchTab({
+        url: '/pages/index'
+      })
+    },
+    goback() {
+      wepy.navigateBack({
+        delta: 1
+      })
+    }
+  }
+
+  events = {}
+
+  onLoad() {
+  }
+}
+</script>

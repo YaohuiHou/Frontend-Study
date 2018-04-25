@@ -1,0 +1,409 @@
+<style lang="less">
+  page{
+    background: #fff;
+  }
+  form{
+    padding: 0 32rpx;
+    box-sizing: border-box;
+    display:block;
+  }
+  .title{
+    font-size: 48rpx;
+    line-height: 48rpx;
+    font-weight: bold;
+    color: #353535;
+    padding: 64rpx 0 48rpx;
+    box-sizing: border-box;
+  }
+  .section{
+    height: 96rpx;
+    position: relative;
+    display: flex;
+    align-items: center;
+    .err{
+      background: #FF3A35;
+      font-size: 24rpx;
+      color: #FFFFFF;
+      position: absolute;
+      top:-26rpx;
+      height: 48rpx;
+      line-height: 48rpx;
+      border-radius: 4rpx;
+      padding: 0 8rpx;
+      display: flex;
+      align-items: center;
+      &:before{
+        margin-right: 8rpx;
+        display: inline-block;
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAAGXcA1uAAAABGdBTUEAALGPC/xhBQAAAl5JREFUSA2tlbtrVEEUxu9uEFkFk8pXighKSIqAjy3Tm5SKBLUIWNqktvFvsBLswhYhgqJWtjYpU2mRB2hlAkq0kSRaJNffNztn9uxw924QD5x7vvOd1527szNFgZRl+QQ9K7CEBpEz0YVlqSwRPwwERtGGHoHl0RAwooFEvC3ylxyJJQkPqphWUhCSvqAr5qvVA7SvjWWKl4x3TXjuN1NpUdx0+Iy9nuMCfOvfagTqSLTWE8J60HnRzZgGS03WLdF3Mk52hGbHyvYkuK3O29bG2bYSnZ+gVvdZwUxuZH5ym4yexztMTBdM0XIm4/oXrSBJr9PsHtgDnsqLg09gEv2AHqIf0XuViSIJ/kYlW6g+6WM5UcatMPykIiFOR3KMdW2A/1gS9ispY/KbgI4LCJ6P/oWM/ylfExazgLkXDUSrfdTyuyyLF/kExR/VFeQTVHC5rqBqwpreS1u3rlCdg/D1Gkq8Gn1vRnG2PAF+mXymPEVNviuA89AI7E5KNgB5zSV4uGQ5A20sfuWrarA2p8616g3qp5Dkl+J79v3HCCz4oMM74CnfM2DIK+iBS8zhgS8imE7iPDH6q5avvT2BozdsGVlhW+Sdc3zVnnHh4j75b0RoW7yIVn6dXHLBql3swgHeYcicBszmkQG+HzBsBdZiVgN2zRti/2XArgY8H9LYwn7AST6RNsZyKOZbddD/KbqEbtmb2ZBwvw6Y8g1eqz1Jrs5wnR3VQlB3qB34wCTPQKPodXQzsT2wDkyXgXXv3c7GOEvBJO5d9Daq/4t+B31bHU6f0Hfoe07BfWyl/AUXZyU/tZiygwAAAABJRU5ErkJggg==) no-repeat 50% 50%; -webkit-background-size: 12px 12px; background-size: 12px 12px;
+        content: '';
+        width: 12px;
+        height: 12px;
+      }
+      &:after{
+        content: '';
+        width: 0;
+        height: 0;
+        border-left: 4rpx solid transparent;
+        border-right: 4rpx solid transparent;
+        border-top: 4rpx solid #FF3A35;
+        position: absolute;
+        top: 48rpx;
+        left: 16rpx;
+      }
+    }
+    &:after{
+      content:"";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      border-bottom: 1px solid rgba(23,24,26,0.12);
+      -webkit-transform-origin: 0 100%;
+      transform-origin: 0 100%;
+      -webkit-transform: scaleY(0.5);
+      transform: scaleY(0.5);
+    }
+    text{
+      font-size: 32rpx;
+      color: #353535;
+      line-height: 32rpx;
+    }
+    input{
+      height: 56rpx;
+      padding: 0 16rpx;
+      display: inline-block;
+      box-sizing: border-box;
+      flex:1;
+      font-size: 32rpx;
+      line-height: 56rpx;
+    }
+    .close:after{
+      display: inline-block;
+      width: 64rpx;
+      text-align: center;
+      content:'\e7b0';
+      font-size: 24rpx;
+      text-align: right;
+      font-family: 'vanca';
+      color:  rgba(53,53,53,0.40);
+    }
+    .placeholderc{
+      line-height: 56rpx;
+      font-size: 32rpx;
+      color: rgba(53,53,53,0.40);
+    }
+    .count-down{
+      font-size: 14px;
+      line-height:58rpx;
+      height: 58rpx;
+      color: rgba(53,53,53,0.40);
+    }
+    .get-code{
+      display: inline-block;
+      background: #fff;
+      border:1rpx solid #FF9400;
+      line-height:56rpx;
+      color: #FF9400;
+      border-radius: 8rpx;
+      font-size: 28rpx;
+      padding: 0 12rpx;
+      margin: 0;
+      box-sizing: border-box;
+      &::after {
+        border: 0;
+      }
+      &[disabled]:not([type]){
+        background: transparent;
+        border:1rpx solid rgba(53,53,53,0.40);;
+        padding: 0 6px;
+        color: rgba(53,53,53,0.40);
+      }
+    }
+    .pic-code{
+      width: 160rpx;
+      height: 70rpx;
+      border: 2rpx solid #eee;
+    }
+  }
+  .submit{
+    border:0;
+    border-radius: 4px;
+    height: 88rpx;
+    font-size: 16px;
+    color: #FFFFFF;
+    line-height: 88rpx;
+    margin-top: 72rpx;
+    background: #FF9400;
+    &::after {
+        border: 0;
+      }
+    &[disabled]:not([type]){
+        background: rgba(255,119,0,0.40);
+        color: #fff;
+    }
+  }
+</style>
+<template>
+<form bindsubmit="formSubmit">
+  <view class="title">绑定手机号</view>
+  <view class="section">
+    <view class="err" wx:if="{{phoneErr}}">手机号格式错误，请重新输入</view>
+   <text>手机号</text>
+    <input type="number"
+    placeholder="请填写手机号" value="{{phone}}"
+    placeholder-class="placeholderc"
+    name="phone"
+    @input="changePhone" maxlength="11"/>
+    <view class="close" wx:if="{{phone!==''}}" @tap="clearPhone"></view>
+  </view>
+  <view class="section">
+    <view class="err" wx:if="{{picErr}}">图形验证码错误，请重新输入或重新获取</view>
+    <text>图形码</text>
+    <input type="number" 
+      placeholder="请填写图形验证码" 
+      maxlength="4" 
+      value="{{picCode}}" 
+      @input="inputPicCode" 
+      placeholder-class="placeholderc" />
+    <view class="pic-code" style="background:url({{imgCode}}) no-repeat 0 5px;background-size:contain;" 
+      @tap="getPicCode({{host}})"></view>
+  </view>
+  <view class="section">
+    <view class="err" wx:if="{{cordErr}}">验证码错误，请重新输入或重新获取</view>
+    <text>验证码</text>
+    <input type="number"
+      placeholder="请填写验证码"
+      maxlength="6"
+      value="{{cord}}"
+      @input="changeCord"
+      name="cord"
+      placeholder-class="placeholderc"/>
+    <view class="count-down" wx:if="{{beginCountDown}}">{{countDown}}s 后重新获取</view>
+    <button class="get-code" wx:if="{{!beginCountDown}}" disabled="{{disabledCord}}" @tap="getCord"> 获取验证码 </button>
+  </view>
+  <view class="btn-area">
+    <button formType="submit" class="submit" disabled="{{submitdisabled}}">绑定</button>
+  </view>
+  <successModel wx:if="{{joinSuccress}}" :userinfo.sync="userinfos" :groupId.sync="groupId" :groupname.sync="groupName"></successModel>
+</form>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+import successModel from '../../components/public/successModel'
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '绑定手机号',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTextStyle: 'black'
+  }
+
+  components = {
+    successModel: successModel
+  }
+
+  mixins = [mixin]
+
+  data = {
+    beginCountDown: false,
+    countDown: 60,
+    disabledCord: true,
+    submitdisabled: true,
+    phoneErr: false,
+    phone: '',
+    userinfos: {}, // 用户的个人信息
+    codeType: '', // 获取验证码类型，1短信，2语音
+    cord: '', // 输入的短信验证码
+    joinSuccress: false,
+    cordErr: false,
+    picErr: false, // 图形验证码错误提示
+    imgCode: '', // 图形
+    groupId: '', // 用户需要加入的组id
+    openid: '', // 用户id
+    groupName: '', // 用户需要加入的组名字
+    picCode: '', // 图形验证码
+    cookie: '' // 后台响应头返回的cookie
+  }
+
+  computed = {}
+
+  methods = {
+    changePhone(e) {
+      this.phone = e.detail.value.trim()
+      if (this.phone.length > 10) {
+        if (this.methods.checkTel(this.phone)) {
+          if (this.picCode && this.picCode > 3) {
+            this.disabledCord = false
+          }
+          this.phoneErr = false
+        } else {
+          this.phoneErr = true
+        }
+      } else {
+        this.phoneErr = false
+        this.disabledCord = true
+      }
+      this.checkSubmitStatus()
+    },
+    // 输入图形验证码
+    inputPicCode(e) {
+      let code = e.detail.value.trim()
+      if (code.length > 3 && this.methods.checkTel(this.phone)) {
+        this.disabledCord = !this.disabledCord
+        this.picCode = code
+      } else {
+        this.disabledCord = true
+      }
+      this.picErr = false
+    },
+    // 更换图形验证码
+    getPicCode() {
+      this.getCode()
+    },
+    // 验证手机号
+    checkTel(tel) {
+      let reg = /^1(([38]\d)|(4[57])|(5[012356789])|(6[6])|(7[0678])|(9[89]))\d{8}$/
+      if (reg.test(tel.trim())) {
+        return true
+      } else {
+        return false
+      }
+    },
+    clearPhone() {
+      this.phone = ''
+    },
+    // 获取验证码
+    getCord() {
+      // 获取验证码
+      this.countDown = 60 // 重置倒计时数字
+      this.countDownFn && clearInterval(this.countDownFn)
+      this.beginCountDown = !this.beginCountDown
+      this.countDownFn = setInterval(() => {
+        if (this.countDown === 0 || this.picErr) {
+          clearInterval(this.countDownFn)
+          this.countDown = 60
+          this.beginCountDown = !this.beginCountDown
+        }
+        this.countDown--
+        this.$apply()
+      }, 1000)
+      this.getMessageCode()
+    },
+    // 输入获取到的验证码
+    changeCord(e) {
+      this.cord = e.detail.value.trim()
+      this.checkSubmitStatus()
+      this.cordErr = false
+    }
+  }
+  // 请求获取验证码
+  getMessageCode() {
+    // 短信验证
+    wepy.request({
+      url: `${this.host}/sendMobileMessage`,
+      header: {
+        'Cookie': this.cookie
+      },
+      method: 'POST',
+      data: {
+        tel: this.phone,
+        code: this.picCode
+      }
+    }).then(res => {
+      let {status, message} = res.data
+      if (!status) {
+        wepy.showToast({
+          title: '发送成功',
+          icon: 'success',
+          duration: 2000
+        })
+      } else {
+        if (message === '图形验证码错误') {
+          this.picErr = true
+          this.beginCountDown = !this.beginCountDown
+          this.countDownFn && clearInterval(this.countDownFn)
+          this.$apply()
+          return
+        }
+        wepy.showToast({
+          title: message,
+          icon: 'success',
+          duration: 2000
+        })
+      }
+    })
+  }
+  //  判断提交状态
+  checkSubmitStatus() {
+    if (
+      this.methods.checkTel(this.phone) &&
+      this.cord.length > 5 &&
+      !this.cordErr
+    ) {
+      this.submitdisabled = false
+    } else {
+      this.submitdisabled = true
+    }
+  }
+  // 提交
+  formSubmit(e) {
+    wepy
+      .request({
+        url: `${this.host}/joinGroup`,
+        method: 'POST',
+        header: {
+          Cookie: this.cookie
+        },
+        data: {
+          openid: this.openid,
+          mobile: this.phone,
+          groupId: this.groupId,
+          messageCode: this.cord
+        }
+      })
+      .then(res => {
+        let { status, message } = res.data
+        if (!status) {
+          this.joinSuccress = true
+          this.submitdisabled = true
+        } else {
+          this.submitdisabled = false
+          if (message === '短信验证码错误') {
+            this.cordErr = true
+            this.$apply()
+            return
+          }
+          wepy.showToast({
+            title: message,
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      })
+  }
+  async getCode() {
+    let res = await wepy.request({
+      url: `${this.host}/getCode?ts=${+new Date()}`
+    })
+    let { data, status } = res.data
+    if (!status) {
+      this.imgCode = data
+      this.cookie = res.header['set-cookie'] || res.header['Set-Cookie']
+      this.$apply()
+    }
+  }
+  events = {}
+  async onLoad(option) {
+    this.openid = await this.getOpenid()
+    this.groupId = option.id
+    // this.groupId = 44  测试使用
+    this.groupName = option.groupName
+    this.userinfos = await wepy.getStorageSync('userInfo')
+    this.getCode()
+    this.$apply()
+  }
+}
+</script>

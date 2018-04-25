@@ -1,0 +1,225 @@
+<style lang="less" scoped>
+  .sign{
+    // background: url('https://s.kcimg.cn/wechat/vanca/sign-bg.png') no-repeat;
+    // background-size:100% 100%;
+    padding: 32px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    .bg{
+      position: absolute;
+      left: 0;
+      top:0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    .top{
+      font-size: 20px;
+      color: #FFFFFF;
+      line-height: 20px;
+      font-weight: bold;
+      .text{
+        font-size: 16px;
+        color: #FFFFFF;
+        float: right;
+        &:after{
+          content:'\e769';
+          font-family: 'vanca';
+          font-size: 10px;
+          margin-left: 4px;
+        }
+      }
+    }
+    .sign-num{
+      font-size: 28rpx;
+      line-height: 60rpx;
+      color: rgba(255,255,255,0.60);
+      padding: 16rpx 0;
+    }
+    .time{
+      height: 80px;
+      margin-top:8rpx;
+      position: relative;
+      z-index: 1;
+      .line{
+        position: absolute;
+        background: #055DA5;
+        border-radius: 100px;
+        height: 6px;
+        top: 35px;
+        z-index: -1;
+        width: 100%;
+      }
+      .all-day{
+        position: relative;
+        .day{
+          position: absolute;
+          color: #fff;
+          text-align: center;
+          font-size: 12px;
+          line-height: 28px;
+          padding-top: 44px;
+          padding-top: 44px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          &:first-child{
+            text-align: left;
+          }
+          &:before{
+            content:"";
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top:35px;
+            left: -2px;
+          }
+        }
+        .two-day{
+          left: 34px;
+        }
+        .three-day,.five-day,.seven-day{
+          left: 68px;
+          width: 30px;
+          &:before{
+            background: url('https://s.kcimg.cn/wechat/vanca/prise.png') 50% 50%;
+            background-size: cover;
+            width: 30px;
+            height: 30px;
+            top:15px;
+          }
+          &.sign-ok:before{
+            background: url('https://s.kcimg.cn/wechat/vanca/sign-prise.png') 50% 50%;
+            background-size: cover;
+            width: 30px;
+            height: 30px;
+            top:15px;
+          }
+        }
+        .fore-day{
+          left: 124px;
+        }
+        .five-day{
+          left: 162px;
+          width: 36px;
+          &:before,&.sign-ok:before{
+            width: 36px;
+            height: 36px;
+            top:9px;
+          }
+        }
+        .six-day{
+          left: initial;
+          right: 70px;
+        }
+        .seven-day{
+          left: initial;
+          right: -10px;
+          width: 44px;
+          &:before,&.sign-ok:before{
+            width: 44px;
+            height: 44px;
+            top:0px;
+          }
+        }
+        .sign-ok:before{
+          background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAQlBMVEUAAAAxitIyidIyidIyitExitI0jNE1itI0jdU2i9gxidIyitIxidGDuON+teJnqN1Ck9RSnNhBktQ6jtNwrd9WntnUFuusAAAADHRSTlMA2ezHvoFUPzEh8/I+sp/eAAAAoklEQVQoz33TSw7DIAxFUZtPQuhL24R2/1ut3A/IFHwnDI6EEjBUSzFwzhxior6FUeNF0eah8luz1aHLrdUw6KubG6H77OwxzIstmCTfzDNkooT/bvspS6I4smuRNVIY2R1SIJ4amDLelcfRG/IPz30/OsOlbnuIKgNTQNOnMgT5labKECmhqTYkdXxnUcdnHrx1ZeZlW2NiD5g9mvZQm8/hBYF6HLnw1VY5AAAAAElFTkSuQmCC) no-repeat 50% 50%; -webkit-background-size: 14px 14px; background-size: 14px 14px;
+          width: 14px;
+          height: 14px;
+          top:30px;
+        }
+      }
+    }
+    .to-sign-btn{
+      width: 320rpx;
+      height: 80rpx;
+      line-height: 80rpx;
+      margin:0 auto;
+      background-image: linear-gradient(-44deg, #FD7B1E 0%, #FFB200 100%);
+      box-shadow: 0 4rpx 24rpx 0 rgba(251,156,51,0.40);
+      border-radius: 200rpx;
+      font-size: 36rpx;
+      color: #FFF0D9;
+      text-shadow: 0 4rpx 8rpx rgba(255,102,51,0.43);
+      text-align: center;
+      &.is-ok{
+        background: rgba(53,53,53,0.20);
+        box-shadow:none;
+      }
+      &:after{
+        content:'';
+        width: 16px;
+        height: 16px;
+        background: url("https://s.kcimg.cn/wechat/vanca/gold-3x.png") 50% 50%;
+        background-size: cover;
+        margin-left: 8rpx;
+        display: inline-block;
+      }
+    }
+  }
+</style>
+<template>
+<view class="sign">
+  <image mode="scaleToFill" src="https://s.kcimg.cn/wechat/vanca/sign-bg.png" class="bg"></image>
+  <view class="top">{{signInfo.completeProgress[nowTime]=='0'?'今日未签到':'今日已签到'}}
+    <navigator url="/pages/activityRule" class="text" hover-class="none">活动规则</navigator>
+  </view>
+  <view class="sign-num">累计签到{{signInfo.total}}天</view>
+  <view class="time">
+    <view class="line"></view>
+    <view class="all-day">
+      <view class="day {{signInfo.completeProgress[0]==1?'sign-ok':''}}">1</view>
+      <view class="day two-day {{signInfo.completeProgress[1]==1?'sign-ok':''}}">2</view>
+      <view class="day {{signInfo.completeProgress[2]==1?'sign-ok':''}} three-day">3</view>
+      <view class="day fore-day {{signInfo.completeProgress[3]==1?'sign-ok':''}}">4</view>
+      <view class="day five-day {{signInfo.completeProgress[4]==1?'sign-ok':''}}">5</view>
+      <view class="day six-day {{signInfo.completeProgress[5]==1?'sign-ok':''}}">6</view>
+      <view class="day {{signInfo.completeProgress[6]==1?'sign-ok':''}} seven-day">7</view>
+    </view>
+  </view>
+  <view class="to-sign-btn" @tap="sign" wx:if="{{signInfo.completeProgress[nowTime]=='0'}}">签到 +{{signInfo.rule[nowTime]}}</view>
+  <view class="to-sign-btn is-ok" wx:if="{{signInfo.completeProgress[nowTime]!='0'}}">明日继续~</view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+export default class Index extends wepy.component {
+  components = {}
+  props = {
+    openid: String,
+    signInfo: Object
+  }
+  mixins = [mixin]
+  data = {
+    nowTime: null,
+    isSign: false
+  }
+  events = {}
+  computed = {}
+  methods = {
+    sign() {
+      wepy.request({
+        url: `${this.host}/completeTask`,
+        data: {
+          openid: this.openid,
+          project: this.signInfo.project
+        },
+        method: 'post'
+      }).then((res) => {
+        this.$emit('sign')
+        this.signInfo.total++
+        this.signInfo.completeProgress[this.getweekDay()] = 1
+        this.$apply()
+      })
+    }
+  }
+  onLoad() {
+    this.nowTime = this.getweekDay()
+  }
+}
+</script>

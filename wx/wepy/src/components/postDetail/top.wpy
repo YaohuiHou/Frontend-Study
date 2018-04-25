@@ -1,0 +1,61 @@
+<style scoped type="less">
+  .post-header {
+    display: flex;
+    padding-top: 24rpx;
+    .head{
+      width: 64rpx;
+      height: 64rpx;
+      border-radius: 50%;
+    }
+    .content{
+      flex:1;
+      display: flex;
+      justify-content:space-between;
+      flex-direction:column;
+      margin-left: 16rpx;
+      .name{
+        font-size: 28rpx;
+        color: #576B95;
+        line-height: 28rpx;
+      }
+      .time{
+        font-size: 20rpx;
+        color: #B2B2B2;
+        line-height: 24rpx;
+      }
+    }
+  }
+</style>
+<template>
+  <view class="post-header">
+    <image src="{{postheader.writer.avatar}}" @error="imgError" class="head" @tap="userLink"></image>
+    <view class="content">
+      <view class="name">
+        <text>{{postheader.writer.nickname ? postheader.writer.nickname : '火星卡友'}}</text>
+      </view>
+      <view class="time">
+        <text>{{postheader.date}}</text>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import mixin from '../../mixins'
+  export default class Top extends wepy.component {
+    props = {
+      postheader: {}
+    }
+    mixins = [mixin]
+    components = {
+    }
+    methods = {
+      imgError (e) {
+        this.postheader.writer.avatar = 'https://i.kcimg.cn/data/avatar/noavatar_big.gif-50x50.jpg'
+      },
+      userLink () {
+        this.toUserPage(this.postheader.editorid)
+      }
+    }
+  }
+</script>

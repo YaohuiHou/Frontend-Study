@@ -1,0 +1,89 @@
+<style lang="less" scoped>
+  .group-list{
+    .list{
+      margin: 16px;
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 2px 12px 0 rgba(255,148,0,0.2);
+      border-radius: 4px;
+      z-index:10;
+      position: relative;
+      .logo{
+        width: 100rpx;
+        height: 100rpx;
+        border-radius: 50%;
+        margin-right: 24rpx;
+      }
+      .main{
+        flex:1;
+        display: flex;
+        height: 100rpx;
+        flex-direction: column;
+        justify-content:center;
+        font-size: 28rpx;
+        color: #888888;
+        line-height: 28rpx;
+        .name{
+          font-size: 36rpx;
+          color: #353535;
+          line-height: 40rpx;
+          margin-bottom: 20rpx;
+          overflow: hidden;
+        }
+      }
+      .to-look,.is-join{
+        display: block;
+        border: 1px solid #FF9400;
+        border-radius: 200rpx;
+        font-size: 28rpx;
+        color: #FF9400;
+        width: 128rpx;
+        height: 56rpx;
+        text-align: center;
+        line-height: 56rpx;
+        background-color: #fff;
+      }
+      .is-join{
+        border: 1px solid rgba(53,53,53,0.20);
+        color: rgba(53,53,53,0.20);
+      }
+    }
+  }
+</style>
+<template>
+<view class="group-list">
+  <block wx:for="{{group}}" wx:key="{{index}}">
+    <navigator url="/pages/corps/list?id={{item.id}}" class="list" hover-class="none">
+      <image class="logo" src="{{item.groupAvatar}}"></image>
+      <view class="main">
+        <view class="name">{{item.title}}</view>
+        <view class="des"><text>帖子:{{item.posterTotal}}</text><text style="margin-left:10px">成员:{{item.userTotal}}</text></view>
+      </view>
+      <view bindtap="default" hover-class="none" class="to-look" wx:if="{{!item.inGroup}}">去看看</view>
+      <view bindtap="default" hover-class="none" class="is-join" wx:if="{{item.inGroup}}">已加入</view>
+    </navigator>
+  </block>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+
+export default class Index extends wepy.component {
+  components = {}
+
+  mixins = [mixin]
+  props = {
+    group: Array
+  }
+  data = {}
+  events = {}
+  computed = {}
+  methods = {}
+  onLoad() {}
+}
+</script>

@@ -1,0 +1,538 @@
+<style lang="less">
+  page{
+    height: 100%;
+  }
+  .container{
+    width: 100%;
+    position: relative;
+  }
+  .push_entry{
+    position: fixed;
+    right: 8px;
+    bottom: 0;
+    width: 64px;
+    height: 64px;
+    z-index: 1001;
+  }
+  .entry-icon{
+    width: 64px;
+    height: 64px;
+  }
+  .list{
+    height: 400px;
+  }
+  .load-end{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 28rpx;
+    padding: 26rpx 0;
+    text-align: center;
+    background: #F3F4F5;
+    width: 100%;
+  }
+  .legion{
+    background: #FF9400;
+    text-align: center;
+    .logo{
+      height: 123px;
+      width: 100%;
+    }
+  }
+  .tabs{
+    height:50px;
+    background: #fff;
+    border-top: 10px solid #f3f4f5;
+    padding-left: 8px;
+    position: static;
+    .nav{
+      font-size: 18px;
+      color: #888888;
+      line-height: 28px;
+      padding: 7px 8px 15px;
+      width: 60px;
+      box-sizing: border-box;
+      display: inline-block;
+    }
+    .my{
+      width: 104px;
+    }
+     .select{
+        font-size: 22px;
+        color: #353535;
+        line-height: 33px;
+        padding: 4px 8px 13px;
+        font-weight: bold;
+        position: relative;
+        &::after{
+          content: '';
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 14px;
+          height: 3px;
+          background:#FF9400 ;
+          bottom: 8px;
+        }
+      }
+  }
+  .post-ask-mask{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.80);
+    z-index: 5000;
+    .close{
+      font-size: 0px;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABRklEQVRoQ+2X0Q3DIAxE8WbdpM1kTTfpZlRIjhRFELDvaBXV+Y7NvTswiaSLP3Jx/SkAfp1gJBAJgA7EFgINhMsjAdhCsEEkABoIl/93AjnnNaWURWTxWInWlzXdCejidxW+WiHQ+s0wFkDpNwxxEF9qXyLy8KToBiiLVYR0IZjioS20uWWBYIunAIwmMUM8DaAHMUs8FaAFoZNum1bQga0dcugQ1xpW3N6/5p42rQlFB2gkQXcevgfOZnYjhe6I/fo94NhCdAjqFqpNG4XcH2IqBA3gbFRaLjvrNqIAjMz5WRAwwIh4z2fHaBIQgEX8LAg3gEf8DAgEoHy/P1WU+YY9GLCISPm7Mz9uAL1xC8TN+zOiEG+vePrHnNk+QgGUAGF9uEUAwBaCDSIB0EC4PBKALQQbRAKggXB5JABbCDaIBEAD4fIP9e2rMYcoYvMAAAAASUVORK5CYII=) no-repeat 50% 50%; -webkit-background-size: 24px 24px; background-size: 24px 24px;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: 50%;
+      margin-left: -12px;
+      bottom: 40px;
+    }
+    .post-ask-group{
+      position: absolute;
+      bottom: 160px;
+      display: flex;
+      justify-content: space-between;
+      width: 216px;
+      left: 50%;
+      margin-left: -108px;
+    }
+    navigator{
+      font-size: 16px;
+      color: #FFFFFF;
+      line-height: 24px;
+      text-align: center;
+      &::before{
+        content:'';
+        width: 72px;
+        height: 72px;
+        display: block;
+        margin-bottom: 8px;
+      }
+    }
+    .to-post-btn:before{
+      background: url('https://s.kcimg.cn/wechat/vanca/to-post.png') no-repeat 50% 50%;
+      background-size: contain;
+    }
+    .to-ask-btn::before{
+      background: url('https://s.kcimg.cn/wechat/vanca/to-ask.png') no-repeat 50% 50%;
+      background-size: contain;
+    }
+  }
+  .notice{
+    line-height: 40px;
+    color: #fff;
+    font-size: 16px;
+    color: #353535;
+    background: #fff;
+    &::before{
+      content:'';
+      display: inline-block;
+      width: 56px;
+      height: 40px;
+      vertical-align: middle;
+      margin-right: 4px;
+      background: url('https://s.kcimg.cn/wechat/vanca/notice-icon.png') no-repeat 50% 50%;
+      background-size: cover;
+    }
+  }
+  .top-nav{
+    border:none;
+    position: fixed;
+    top:0;
+    left: 0;
+    z-index: 100;
+    background: #fff;
+    width: 100%;
+    margin-top: 0;
+    box-shadow: 0 2px 12px 0 rgba(178,178,178,0.12);
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="legion">
+      <image src="https://s.kcimg.cn/wechat/vanca/home-banner.png" class="logo"></image>
+      <!-- <text class="text">35152位 卡友在这里共同成长</text> -->
+    </view>
+    <indexModule></indexModule>
+    <indexMenu></indexMenu>
+    <view class="tabs {{static ? 'top-nav':''}}">
+      <text class="nav {{tabStatus==0?'select':''}}" @tap="toTabs(0)">推荐</text>
+      <text class="nav {{tabStatus==1?'select':''}}"  @tap="toTabs(1)">最新</text>
+      <text class="nav my {{tabStatus==2?'select':''}}"  @tap="toTabs(2)">我的小组</text>
+    </view>
+    <netError wx:if="{{errorStatus}}" text=''></netError>
+    <!-- 推荐 -->
+    <view hidden="{{tabStatus!=0}}">
+        <view class="notice">卡友大会嗨翻天！！抢楼大奖你来！！</view>
+       <repeat for="{{skeletion}}" key="index" index="index" item="item" wx:if="{{!errorStatus && !recommend.list.length}}">
+        <listSkeleton></listSkeleton>
+      </repeat>
+      <repeat for="{{recommend.list}}" key="index" index="index" item="item">
+        <recommendlistItem :item="item" :index="index"></recommendlistItem>
+      </repeat>
+      <view class="load-end" wx:if="{{recommend.list.length}}">{{recommend.end ? '已经到底啦': '正在加载中...'}}</view>
+    </view>
+    <!-- 最新 -->
+    <view hidden="{{tabStatus!=1}}">
+      <repeat for="{{skeletion}}" key="index" index="index" item="item" wx:if="{{!errorStatus && !newest.list.length}}">
+        <listSkeleton></listSkeleton>
+      </repeat>
+      <repeat for="{{newest.list}}" key="index" index="index" item="item" >
+        <listItem :item="item" :index="index"></listItem>
+      </repeat>
+      <view class="load-end" wx:if="{{newest.list.length}}">{{end ? '已经到底啦': '正在加载中...'}}</view>
+    </view>
+     
+    <!-- 我的 -->
+    <view hidden="{{tabStatus!=2}}">
+       <repeat for="{{getMyGroupPost.list}}" key="index" wx:if="{{isJoinStatus}}">
+        <mylistItem :item="item" :index="index"></mylistItem>
+      </repeat>
+      <dataEmpty wx:if="{{!isJoinStatus}}" msg="暂无加入的小组" jump="1"></dataEmpty>
+      <view class="load-end" wx:if="{{isJoinStatus && getMyGroupPost.list.length}}">{{getMyGroupPost.end ? '已经到底啦': '正在加载中...'}}</view>
+    </view>
+
+    <view class="push_entry" @tap="showBtn" wx:if="{{isJoinStatus}}">
+      <image mode="widthFix" src="https://s.kcimg.cn/wechat/vanca/add-btn.png" class="entry-icon"></image>
+    </view>
+    <!-- 按钮弹窗 -->
+    <view class="post-ask-mask" hidden="{{!showPostMark}}" @touchmove.stop="touchmoves">
+      <view class="post-ask-group">
+        <navigator class="to-post-btn" url="/pages/toPost?id={{isJoinGroup.id}}&groupName={{isJoinGroup.title}}" hover-class="none">发动态</navigator>
+        <navigator class="to-ask-btn" url="/pages/toAsk?id={{isJoinGroup.id}}&groupName={{isJoinGroup.title}}&isSos=1" hover-class="none">发求助</navigator>
+      </view>
+      <view class="close" @tap="showBtn">关</view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import indexModule from '../components/indexModule'
+import indexMenu from '../components/indexMenu'
+import listItem from '../components/listItem'
+import listSkeleton from '../components/listSkeleton'
+import netError from '../components/public/netError'
+import dataEmpty from '../components/public/dataEmpty'
+import mixin from '../mixins'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '',
+    backgroundColorTop: '#FF9400',
+    enablePullDownRefresh: true
+  }
+  components = {
+    indexModule: indexModule,
+    recommendlistItem: listItem,
+    listItem: listItem,
+    mylistItem: listItem,
+    listSkeleton: listSkeleton,
+    netError: netError,
+    dataEmpty,
+    indexMenu
+  }
+
+  mixins = [mixin]
+
+  data = {
+    isScroll: true, // 是否禁止滚动
+    static: false, // 菜单吸顶
+    errorStatus: 0,
+    tabStatus: '0', // tab切换状态
+    isJoinGroup: {}, // 加入的小组信息
+    getMyGroupPost: { // 我加入的小组帖子数据
+      list: [],
+      loading: false,
+      page: 0,
+      end: false
+    },
+    recommend: { // 推荐帖子
+      list: [],
+      loading: false,
+      page: 1,
+      end: false
+    },
+    newest: { // 最新的帖子数据
+      list: [],
+      loading: false,
+      page: 1,
+      end: false
+    }, // 最新的小组帖子数据
+    wh: 400,
+    time: null,
+    showPostMark: false, // 显示发帖弹出框
+    isJoinStatus: false, // 是否加入过小组
+    skeletion: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    openid: ''
+  }
+  events = {
+    refresh: $event => {
+      this.getData('refresh')
+      wepy.showToast({
+        title: '刷新成功',
+        icon: 'none',
+        duration: 2000
+      })
+    },
+    delete: (index, pid, $event) => {
+      wepy
+        .request({
+          url: `${this.host}/deletePoster`,
+          data: {
+            pid: pid,
+            openid: this.openid
+          }
+        })
+        .then(res => {
+          let { status, message } = res.data
+          if (!status) {
+            if (this.tabStatus === '0') {
+              this.recommend.list.splice(index, 1)
+            } else {
+              this.newest.list.splice(index, 1)
+            }
+            this.$apply()
+            wepy.showToast({
+              title: message,
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        })
+    }
+  }
+  computed = {}
+  onReachBottom() {
+    switch (this.tabStatus) {
+      case '0':
+        this.getData(this.recommend, 1)
+        break
+      case '1':
+        this.getData(this.newest)
+        break
+      case '2':
+        this.getMyGroupPosts()
+        break
+    }
+  }
+  onPullDownRefresh() {
+    switch (this.tabStatus) {
+      case '0':
+        this.recommend.page = 1
+        this.recommend.loading = false
+        this.getData(this.recommend, 1, 'refresh')
+        break
+      case '1':
+        this.newest.page = 1
+        this.newest.loading = false
+        this.getData(this.newest, null, 'refresh')
+        break
+      case '2':
+        this.getMyGroupPost.page = 0
+        this.getMyGroupPost.loading = false
+        this.getMyGroupPosts('refresh')
+        break
+    }
+  }
+  async isJoinGroups() {
+    try {
+      let res = await wepy.request({
+        url: `${this.host}/getGroupListFromUser`,
+        data: {
+          openid: this.openid
+        }
+      })
+      let { data } = res.data
+      if (data[0] && data[0].id) {
+        this.isJoinGroup = data[0]
+        this.isJoinStatus = true
+        wepy.setStorageSync('isJoinGroup', data[0])
+        this.getTaskList(this.openid, data[0].id)
+      } else {
+        this.isJoinStatus = false
+      }
+    } catch (e) {
+    }
+    this.$apply()
+  }
+  touchmoves () {
+    console.log(12)
+  }
+  methods = {
+    toTabs(index) {
+      this.tabStatus = index
+      this.$apply()
+    },
+    showBtn () {
+      this.showPostMark = !this.showPostMark
+      this.isScroll = !this.isScroll
+    }
+  }
+  onPageScroll (event) {
+    if (event.scrollTop > 370) {
+      this.static = true
+    } else {
+      this.static = false
+    }
+    this.$apply()
+  }
+  // 推荐
+  async getData(name, isRecommend, option) {
+    if (name.loading) {
+      return false
+    }
+    name.loading = 1
+    try {
+      let json = {
+        openid: this.openid,
+        size: 12,
+        page: name.page
+      }
+      if (isRecommend) {
+        json.isRecommend = isRecommend
+      }
+      let res = await wepy.request({
+        url: `${this.host}/home`,
+        data: json
+      })
+      this.errorStatus = 0
+      const { status, data } = res.data
+      if (!status) {
+        let datas = this.picking(data)
+        if (option === 'refresh') {
+          name.loading = false
+          name.list = datas
+          wepy.stopPullDownRefresh()
+        } else {
+          name.list = name.list.concat(datas)
+          if (datas.length < 10) {
+            name.end = true
+          } else {
+            name.loading = 0
+          }
+        }
+        name.page += 1
+      }
+      this.$apply()
+    } catch (error) {
+      this.errorStatus = 1
+    }
+  }
+  picking(data) {
+    if (data && data.length) {
+      data.forEach(element => {
+        if (element.images) {
+          element.img = element.images[0]
+        }
+        if (element.img && element.img.indexOf('http://http') > -1) {
+          element.img = element.img.replace(/http:\/\//, '')
+        }
+      })
+    }
+    return data
+  }
+
+  // 获取我的小组帖子
+  async getMyGroupPosts(option) {
+    if (this.getMyGroupPost.loading) {
+      return false
+    }
+    this.getMyGroupPost.loading = true
+    try {
+      let res = await wepy.request({
+        url: `${this.host}/getGroupPosters`,
+        data: {
+          groupId: this.isJoinGroup.id,
+          size: 12,
+          page: this.getMyGroupPost.page
+        }
+      })
+      let { status, data, nextPageToken } = res.data
+      if (!status) {
+        let datas = this.picking(data)
+        if (option === 'refresh') {
+          this.getMyGroupPost.list = datas
+          wepy.stopPullDownRefresh()
+        } else {
+          if (!nextPageToken) {
+            this.getMyGroupPost.end = true
+          } else {
+            this.getMyGroupPost.loading = false
+          }
+          this.getMyGroupPost.list = this.getMyGroupPost.list.concat(datas)
+        }
+        this.getMyGroupPost.page = nextPageToken
+      }
+      this.$apply()
+    } catch (error) {}
+  }
+  // 发帖完成以后更新数据
+  updata() {
+    try {
+      let toask = wepy.getStorageSync('toask')
+      if (toask) {
+        this.recommend.page = 1
+        this.newest.page = 1
+        this.getMyGroupPost.page = 0
+        this.getData(this.recommend, 1)
+        this.getData(this.newest)
+        this.getMyGroupPosts()
+        wepy.removeStorageSync('toask')
+      }
+    } catch (error) {}
+  }
+  async onShow () {
+    if (wepy.getStorageSync('isJoinGroup')) {
+      this.isJoinGroup = wepy.getStorageSync('isJoinGroup')
+    } else {
+      this.isJoinGroups()
+    }
+    this.isScroll = true // 恢复页面滚动
+    // 发帖回来以后进行数据更新
+    this.updata()
+    try {
+      let taskName = wepy.getStorageSync('taskName')
+      let msg = ''
+      switch (taskName) {
+        case '360che_tuan_task_reply':
+          msg = '回复喜欢的帖子吧'
+          break
+        case '360che_tuan_task_share_post':
+          msg = '分享喜欢的帖子吧'
+          break
+        case '360che_tuan_task_share_article':
+          msg = '分享喜欢的文章吧'
+          break
+      }
+      if (taskName) {
+        wepy.showToast({
+          title: msg,
+          icon: 'none',
+          duration: 2000
+        }).then(() => {
+          wepy.removeStorageSync('taskName')
+        })
+      }
+    } catch (error) {}
+  }
+  async onLoad() {
+    this.wh = wepy.getSystemInfoSync().windowHeight
+    this.openid = await this.getOpenid()
+    await this.isJoinGroups()
+    await this.getData(this.recommend, 1)
+    await this.getData(this.newest)
+    await this.getMyGroupPosts()
+    this.$apply()
+  }
+  onHide () {
+    this.showPostMark = false // 关闭弹窗
+  }
+}
+</script>

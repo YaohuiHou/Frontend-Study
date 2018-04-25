@@ -1,0 +1,78 @@
+<style lang="less" scoped>
+  .type-modules{
+    background: #fff;
+    padding:15px 10px;
+    margin-top: -16px;
+    box-sizing: border-box; 
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .btn{
+      height: 72px;
+      text-align: center;
+      line-height: 72px;
+      font-size: 36rpx;
+      color: #FFFFFF;
+    }
+    .repair{
+      width: 96px;
+      background: url('https://s.kcimg.cn/wechat/vanca/repair1.4-bg.png') no-repeat 50% 50%;
+      background-size: cover;
+    }
+    .topic{
+        width: 96px;
+        background: url('https://s.kcimg.cn/wechat/vanca/topic1.4-bg.png') no-repeat 50% 50%;
+        background-size: cover;
+      }
+    .product{
+        width: 127px;
+        background: url('https://s.kcimg.cn/wechat/vanca/product1.4-bg.png') no-repeat;
+        background-size: cover;
+      }
+  }
+ 
+</style>
+<template>
+  <view class="type-modules">
+    <view class="repair btn" @tap="toRepair">维修案例 </view>
+    <navigator url="/pages/topicList" hover-class="none" class="topic btn">话题汇总</navigator>
+    <view class="product btn" @tap="toProduct">产品库大全</view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../mixins'
+export default class Index extends wepy.component {
+  props = {
+
+  }
+  data = {
+
+  }
+  mixins = [mixin]
+  methods = {
+    toRepair() {
+      wepy.navigateToMiniProgram({
+        appId: 'wx95e3af8b74097277',
+        path: '',
+        extraData: {},
+        envVersion: 'release',
+        success(res) {
+        }
+      })
+    },
+    toProduct() {
+      wepy.navigateToMiniProgram({
+        appId: 'wxb8d1c2c944f36e25',
+        path: '',
+        extraData: {},
+        envVersion: 'release',
+        success(res) {
+        }
+      })
+    }
+  }
+}
+</script>

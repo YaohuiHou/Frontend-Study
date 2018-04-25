@@ -1,0 +1,251 @@
+<style lang="less">
+  .container{
+    width: 100%;
+  }
+  .userinfo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: url('https://s.kcimg.cn/wechat/vanca/user_bg.png') no-repeat 50% 50%;
+    background-size:cover;
+    .avatar{
+      height: 160rpx;
+      width: 160rpx;
+      border-radius: 50%;
+      margin:68rpx auto 24rpx;
+    }
+    .name{
+      font-size: 32rpx;
+      color: #FFFFFF;
+      letter-spacing: 0.6rpx;
+      line-height: 44rpx;
+      margin-bottom: 40rpx;
+    }
+    .xingwei{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width:100%;
+      padding: 0 40rpx;
+      box-sizing: border-box;
+      .flex{
+        flex: 1;
+        text-align: center;
+        font-size: 40rpx;
+        color: #FFFFFF;
+        letter-spacing: 0.76rpx;
+        line-height: 40rpx;
+        font-weight: bold;
+        &:after{
+          content: '';
+          font-size: 24rpx;
+          color: #B2B2B2;
+          letter-spacing: 0.44rpx;
+          line-height: 24rpx;
+          display: block;
+          margin-top: 8rpx;
+          font-weight: normal;
+        }
+        &.post:after{
+          content: '发帖';
+        }
+        &.replies:after{
+          content: '回帖';
+        }
+        &.getLike:after{
+          content: '获赞';
+        }
+        &.getShare:after{
+          content: '分享';
+        }
+      }
+    }
+    .share{
+      padding: 0;
+      border: none;
+      background-image: linear-gradient(44deg, #FD7B1E 0%, #FFB200 100%);
+      border-radius: 100px;
+      margin:48rpx auto 80rpx;
+      width: 440rpx;
+      text-align: center;
+      font-size: 32rpx;
+      color: #FFFFFF;
+    }
+  }
+  .content{
+    background: #FFFFFF;
+    border-top-left-radius: 32rpx;
+    border-top-right-radius: 32rpx;
+    margin-top: -32rpx;
+    min-height: 100px;
+    padding-top: 16rpx;
+  }
+  .load-end{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 28rpx;
+    padding: 26rpx 0;
+    text-align: center;
+    background: #F3F4F5;
+    width: 100%;
+  }
+</style>
+<template>
+  <view class="container">
+    <loadPage wx:if="{{!pageStatus}}"></loadPage>
+    <netError wx:if="{{errorStatus}}" text=''></netError>
+    <view class="userinfo" wx:if="{{pageStatus}}">
+      <image src="{{myUser.avatar}}" class="avatar" hover-class="none" @error="imgError"></image>
+      <view class="name">
+        <text>{{myUser.nickname ? myUser.nickname : '火星卡友'}}</text>
+        <view class="grade"></view>
+      </view>
+      <view class="xingwei">
+        <navigator 
+          open-type="navigate"  hover-class="none"
+          url="userPostList?uid={{uid}}" 
+          class="flex post">{{myUser.postersTotal ? myUser.postersTotal : 0}}
+        </navigator>
+        <navigator 
+          open-type="navigate" hover-class="none"
+          url="userReplytList?uid={{uid}}" 
+          class="flex replies">{{myUser.commentsTotal ? myUser.commentsTotal: 0}}
+        </navigator>
+        <view  
+          class="flex getLike">{{myUser.beLikeTotal ? myUser.beLikeTotal : 0}}
+        </view>
+      </view>
+      <button class="share" hover-class="none" plain open-type="share">分享给我的朋友</button>
+    </view>
+    <view class="content" wx:if="{{pageStatus}}">
+      <repeat for="{{post}}" key="index" index="index" wx:if="{{post.length}}">
+        <listItem :item="item"></listItem>
+      </repeat>
+      <dataEmpty wx:if="{{!post.length}}" msg="暂无发帖" jump="1"></dataEmpty>
+      <view class="load-end" wx:if="{{post.length}}">{{loading ? '已经到底啦': '正在加载中...'}}</view>
+    </view> 
+    <goBack></goBack>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import mixin from '../mixins'
+  import listItem from '../components/user/listItem'
+  import dataEmpty from '../components/public/dataEmpty'
+  import loadPage from '../components/public/loadPage'
+  import netError from '../components/public/netError'
+  import goBack from '@/components/public/goBack'
+  export default class Index extends wepy.page {
+    mixins = [mixin]
+  
+    config = {
+      navigationBarTitleText: '我的'
+    }
+    components = {
+      listItem: listItem,
+      dataEmpty: dataEmpty,
+      loadPage: loadPage,
+      netError: netError,
+      goBack
+    }
+
+    data = {
+      errorStatus: 0,
+      pageStatus: false,
+      page: 0,
+      uid: 0,
+      loading: 0,
+      myUser: {
+        avatar: 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png',
+        beLikeTotal: 0,
+        commentsTotal: 0,
+        nickname: '',
+        postersTotal: 0
+      },
+      post: []
+    }
+
+    computed = {
+    }
+    events = {
+      'refresh': ($event) => {
+        this.getData()
+        wepy.showToast({
+          title: '刷新成功',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    }
+    methods = {
+      imgError (e) {
+        this.myUser.avatar = 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+      }
+    }
+    onReachBottom (e) {
+      this.getData()
+    }
+    onShareAppMessage (res) {       // 分享
+      if (res.from === 'button') {
+      }
+      return {
+        title: `看看${this.myUser.nickname}的帖子吧`,
+        path: `/pages/user?uid=${this.uid}`,
+        success: res => {
+          // 转发成功
+        },
+        fail: res => {
+          // 转发失败
+        }
+      }
+    }
+    getData (isLoad = false) {
+      if (this.loading) {
+        return false
+      }
+      this.loading = 1
+      wepy.request({
+        url: `${this.host}/getProfile`,
+        data: {
+          openid: this.uid,
+          page: this.page
+        }
+      }).then(res => {
+        let {status, postersList, nextPageToken} = res.data
+        if (!status) {
+          if (!this.page) {
+            this.pageStatus = true
+            this.myUser = this.getNewObj(this.myUser, res.data)
+          }
+          if (!nextPageToken && postersList.length < 20) {
+            this.loading = 1
+          } else {
+            this.loading = 0
+            this.page = nextPageToken
+          }
+          if (isLoad) {
+            this.post = postersList
+          } else {
+            this.post = this.post.concat(postersList)
+          }
+          this.errorStatus = 0
+          this.$apply()
+        }
+      }).catch((res) => {
+        this.errorStatus = 1
+        this.$apply()
+      })
+    }
+
+    onLoad(option) {
+    }
+    async onShow () {
+      this.loading = 0
+      this.page = 0
+      this.uid = await this.getOpenid()
+      this.getData(1)
+      this.$apply()
+    }
+  }
+</script>

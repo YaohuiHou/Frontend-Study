@@ -1,0 +1,105 @@
+<style lang="less" scoped>
+  .corps-des{
+    background: #fff;
+    padding: 0 32rpx;
+    box-sizing: border-box;
+    .title{
+      font-size: 32rpx;
+      color: #353535;
+      line-height: 72rpx;
+      padding-top: 12rpx;
+      font-weight: bold;
+      font-size: 32rpx;
+    }
+    .text{
+      font-size: 28rpx;
+      color: #888;
+      line-height: 44rpx;
+      word-break: break-all;
+    }
+    .corps-people{
+      .title{
+        padding:20rpx 0 12rpx 0;
+        box-sizing: border-box;
+        text-align: left;
+        &:after{
+          content:'全部';
+          float: right;
+          font-size: 28rpx;
+          color: #888888;
+          font-weight: normal;
+        }
+      }
+      .avatar{
+        display: flex;
+        .item{
+          width: 25%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          image{
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+          }
+          .name{
+            font-size: 28rpx;
+            color: #576B95;
+            line-height: 60rpx;
+            max-width: 136rpx;
+            overflow: hidden;white-space: nowrap;text-overflow: ellipsis;
+          }
+          .leader{
+            font-size: 0;
+            width: 32px;
+            height: 16px;
+            margin-bottom: 28rpx;
+            background: url(data:image/png;base64,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) no-repeat 50% 50%; -webkit-background-size: 32px 16px; background-size: 32px 16px;
+          }
+        }
+      }
+    }
+  }
+</style>
+<template>
+ <view class="corps-des" >
+    <view class="title">小组简介</view>
+    <text decode class="text">{{group.introduction}}</text>
+    <dataEmpty msg="暂未发帖" jump="1"></dataEmpty>
+    <view class="corps-people">
+      <navigator class="title" url="/pages/corps/corpsPeople?id={{group.id}}" hover-class="none">小组成员 {{group.userTotal}}</navigator>
+      <view class="avatar">
+        <view class="item" 
+          wx:for="{{group.groupMembers}}" 
+          wx:key="{{index}}" 
+          wx:if="{{index < 4}}">
+          <image src="{{item.headimgurl?item.headimgurl:headimgurl}}" class="head"  @tap="userLink({{item.openid}})"></image>
+          <view class="name">{{item.nickname?item.nickname:'火星卡友'}}</view>
+          <view class="leader" wx:if="{{item.role=='0'}}">{{group.title}}团长</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import mixin from '../../mixins'
+  import dataEmpty from '../public/dataEmpty'
+  export default class Index extends wepy.component {
+    component = {
+      dataEmpty
+    }
+    props = {
+      group: {}
+    }
+    data = {
+      headimgurl: 'https://s.kcimg.cn/vanca/images/truckhome_avatar.png'
+    }
+    mixins = [mixin]
+    methods = {
+      userLink (id) {
+        this.toUserPage(id)
+      }
+    }
+  }
+</script>

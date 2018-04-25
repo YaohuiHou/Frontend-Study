@@ -1,0 +1,251 @@
+<style lang="less">
+.load-end{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 28rpx;
+    padding: 26rpx 0;
+    text-align: center;
+    background: #F3F4F5;
+    width: 100%;
+  }
+  .topic-header{
+    padding: 0 16px 17px;
+    box-sizing: border-box;
+    background: #fff;
+    .header{
+      margin-bottom: -8px;
+    }
+    .title{
+      font-size: 44rpx;
+      color: #17181A;
+      line-height: 34px;
+      margin-top: 12px;
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .content{
+      font-size: 36rpx;
+      color: #353535;
+      line-height:1.8;
+      letter-spacing: 0;
+      word-break: break-all;
+    }
+    .img{
+      display: block;
+      width: 100%;
+      margin:24rpx auto 0;
+    }
+  }
+  .main-content{
+    border-top: 8px solid #f3f4f5;
+    .header-title{
+      padding: 12px 16px 4px;
+      font-size: 18px;
+      color: #353535;
+      line-height: 28px;
+      background: #fff;
+      width: 100%;
+      font-weight: bold;
+      box-sizing: border-box;
+    }
+  }
+  .detail-footer{
+    margin-top: 16px;
+    display: flex;
+    font-size: 16px;
+    color: #B2B2B2;
+    letter-spacing: 0;
+    line-height: 32px;
+    .text{
+      flex: 1;
+    }
+    .to-share{
+      width: 88px;
+      height: 32px;
+      margin:0;
+      padding: 0;
+      background: rgba(255,148,0,0.12);
+      border: 1px solid #FF9400;
+      border-radius: 4px;
+      font-size: 16px;
+      color: #FF9400;
+      line-height: 32px;
+    }
+  }
+  .entry-icon{
+    position: fixed;
+    right: 8px;
+    bottom: 49px;
+    width: 64px;
+    height: 64px;
+  }
+</style>
+<template>
+  <view class="container">
+   <view class="topic-header">
+     <topicHeader wx:if="{{type=='sos'}}" :topicDetail.sync="topicDetail"></topicHeader>
+     <text class="title">{{topicDetail.title}}</text>
+     <view class="content">
+       <text>{{topicDetail.content}}</text>
+       <block wx:for="{{topicDetail.images}}" wx:key="index">
+         <image src="{{item}}" class="img" mode='widthFix' wx:if="{{item}}"></image>
+       </block>
+     </view>
+     <view class="detail-footer">
+       <text class="text">{{type=='sos' ? isJoinInfo.title : '' }} {{topicDetail.subPostTotal}}人参与</text>
+       <button class="to-share" open-type="share">邀请好友</button> 
+     </view>
+  </view>
+  <view class="main-content">
+    <view class="header-title">看看大家的想法</view>
+    <repeat for="{{list}}" key="index" index="index" item="item" wx:if="{{list.length}}">
+      <listItem :item="item" :index="index"></listItem>
+    </repeat>
+     <dataEmpty wx:if="{{!list.length}}" msg="暂无跟帖" jump="1"></dataEmpty>
+    <view class="load-end" wx:if="{{list.length}}">{{end ? '已经到底啦': '正在加载中...'}}</view>
+  </view>
+  <navigator class="push_entry" hover-class="none" url="/pages/toPost?id={{isJoinInfo.id}}&groupName={{isJoinInfo.title}}&pid={{id}}" wx:if="{{isJoinInfo.id}}">
+      <image mode="widthFix" src="https://s.kcimg.cn/wechat/vanca/{{type == 'topic' ? 'to-view' : 'to-help' }}.png" class="entry-icon"></image>
+  </navigator>
+  <goBack></goBack>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import listItem from '../components/listItem'
+import topicHeader from '../components/topic/topicHeader'
+import dataEmpty from '../components/public/dataEmpty'
+import goBack from '@/components/public/goBack'
+import mixin from '../mixins'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '话题',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTextStyle: 'black',
+    enablePullDownRefresh: true
+  }
+  components = {
+    topicHeader: topicHeader,
+    listItem: listItem,
+    goBack: goBack,
+    dataEmpty: dataEmpty
+  }
+  // 分享
+  onShareAppMessage(res) {
+    if (res.from === 'button') {
+    }
+    return {
+      title: this.topicDetail.title,
+      path: `/pages/topicDetails?id=${this.id}&project=${this.project}`,
+      success: res => {
+      },
+      fail: res => {
+        // 转发失败
+      }
+    }
+  }
+  mixins = [mixin]
+
+  data = {
+    end: false,
+    errorStatus: 0,
+    page: 0,
+    id: 0,  // 帖子主id
+    type: '', // 是否为求助
+    loading: 0,
+    list: [],
+    wh: 400,
+    isJoinInfo: {}, // 是否加入过小组
+    topicDetail: {},
+    project: ''
+  }
+  events = {
+    refresh: $event => {
+    }
+  }
+  computed = {}
+  onReachBottom(e) {
+    this.getData()
+  }
+  onPullDownRefresh() {
+    this.page = 0
+    this.loading = 0
+    this.getData('refresh')
+  }
+  methods = {
+  }
+  async getData(option) {
+    if (this.loading) {
+      return false
+    }
+    this.loading = 1
+    try {
+      let res = await wepy.request({
+        url: `${this.host}/getSubPostList`,
+        data: {
+          type: this.type,
+          id: this.id,
+          page: this.page
+        }
+      })
+      let { status, data, nextPageToken } = res.data
+      if (!status) {
+        if (this.page === 0) {
+          this.topicDetail = data
+        }
+        if (option === 'refresh') {
+          this.list = this.picking(data.subPostList)
+          wepy.stopPullDownRefresh()
+        } else {
+          let datas = this.picking(data.subPostList)
+          this.list = this.list.concat(datas)
+          if (datas.length < 20) {
+            this.end = true
+          } else {
+            this.loading = 0
+          }
+        }
+        this.page = nextPageToken
+      }
+      this.$apply()
+    } catch (error) {
+      this.errorStatus = 1
+    }
+  }
+  picking(data) {
+    if (data && data.length) {
+      data.forEach(element => {
+        element.nickname = element.nickname ? element.nickname : ' 火星卡友'
+        element.avatar = element.headimgurl
+        element.total = element.posterCommentsTotal
+        element.img = element.images[0]
+      })
+    }
+    return data
+  }
+  onShow () {
+  }
+  async onLoad(option) {
+    this.id = option.id
+    this.project = option.project
+    if (option.project.indexOf('sos') > 0) {
+      this.type = 'sos'
+      wepy.setNavigationBarTitle({
+        title: '求助'
+      })
+    } else {
+      this.type = 'topic'
+      wepy.setNavigationBarTitle({
+        title: '话题'
+      })
+    }
+    console.log(wepy, 123)
+    this.isJoinInfo = wepy.getStorageSync('isJoinGroup')
+    this.getData()
+    this.$apply()
+  }
+}
+</script>

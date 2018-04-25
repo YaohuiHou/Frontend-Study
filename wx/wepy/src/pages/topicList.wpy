@@ -1,0 +1,162 @@
+<style lang="less">
+  .topic-scroll{
+    padding: 12px 0;
+    box-sizing: border-box;
+    .topic-card{
+      margin: 0 16px;
+      box-sizing: border-box;
+      margin-bottom:16px;
+    }
+  }
+  .scoll-x{
+      padding:0 0 0 16px;
+      width: 100%;
+      box-sizing: border-box;
+      white-space: nowrap;
+      display: flex;
+      background: #fff;
+      height: 50px;
+      .type-btn{
+        font-size: 16px;
+        color: #888888;
+        line-height: 20px;
+        padding: 10px 8px 20px;
+        display: inline-block;
+        position: relative;
+        &:first-child{
+          padding-left: 0;
+        }
+        &:first-child.action::after{
+            width: 14px;
+            margin-left: -7px;
+          }
+      }
+      .action{
+        font-size: 22px;
+        color: #353535;
+        &::after{
+          content: '';
+          width: 14px;
+          height: 3px;
+          bottom: 8px;
+          position: absolute;
+          left: 50%;
+          -webkit-transform: translate(-50%, 0);
+          transform: translate(-50%, 0);
+          display: block;
+          background: #FF9400;
+          box-shadow: 0 0 1px 0 rgba(161,169,179,0.20), 0 0 2px 0 rgba(161,169,179,0.10);
+        }
+      }
+  }
+ .load-end{
+    font-size: 28rpx;
+    color: #888888;
+    line-height: 28rpx;
+    padding: 26rpx 0;
+    text-align: center;
+    width: 100%;
+  }   
+</style>
+<template>
+    <!-- 分类1.3没有这个功能 -->
+    <!-- <scroll-view class="scoll-x" scroll-x>
+      <view class="type-btn {{tabStatus==index?'action':''}}" 
+      wx:for="{{typeList}}" 
+      wx:key="index"
+      @tap="tabs({{index}})">{{item.name}}</view>
+    </scroll-view> -->
+    <!-- 全部 -->
+    <scroll-view scroll-y class="topic-scroll" 
+      style="height:{{wh}}px" 
+      lower-threshold="100"
+      @scrolltolower="scrollRefresh">
+      <repeat for="{{list}}" key="index">
+        <cardItem :card="item"></cardItem>
+      </repeat>
+      <view class="load-end" wx:if="{{list.length}}">{{end ? '已经到底啦': '正在加载中...'}}</view>
+      <dataEmpty wx:else msg="暂无话题" jump=""></dataEmpty>
+    </scroll-view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import cardItem from '../components/topic/carditem'
+import dataEmpty from '../components/public/dataEmpty'
+import mixin from '../mixins'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '话题',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTextStyle: 'black'
+  }
+  components = {
+    cardItem: cardItem,
+    dataEmpty: dataEmpty
+  }
+
+  mixins = [mixin]
+
+  data = {
+    end: false,
+    errorStatus: 0,
+    page: 0,
+    wh: '400',
+    loading: 0,
+    tabStatus: 0, // tab切换状态
+    typeList: [
+      {
+        name: '全部',
+        typeid: 0
+      }
+    ],
+    list: [],
+    openid: ''
+  }
+  events = {
+  }
+  computed = {}
+  methods = {
+    tabs(index) {
+      this.tabStatus = index
+    }
+  }
+  scrollRefresh () {
+    this.getData()
+  }
+  async getData(option) {
+    if (this.loading) return
+    this.loading = 1
+    try {
+      let res = await wepy.request({
+        url: `${this.host}/getMainPostList`,
+        data: {
+          type: 'topic',
+          page: this.page
+        }
+      })
+      let {data, status, nextPageToken} = res.data
+      if (!status) {
+        this.page = nextPageToken
+        if (nextPageToken) {
+          this.loading = 0
+        } else {
+          this.loading = 1
+          this.end = 1
+        }
+        this.list = this.list.concat(data)
+      }
+      this.$apply()
+    } catch (error) {}
+  }
+  onShow () {
+  }
+  async onLoad() {
+    this.openid = await this.getOpenid()
+    this.wh = wepy.getSystemInfoSync().windowHeight
+    this.getData()
+    this.$apply()
+  }
+}
+</script>

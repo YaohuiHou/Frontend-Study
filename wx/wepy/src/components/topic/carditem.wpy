@@ -1,0 +1,68 @@
+<style lang="less" scoped>
+  .topic-card{
+    background: #fff;
+    padding: 20px 16px 0;
+    box-shadow: 0 2px 12px 0 rgba(178,178,178,0.12);
+    border-radius: 4px;
+    .title{
+      font-size: 22px;
+      color: #17181A;
+      line-height: 34px;
+      text-align: center;
+      word-break: break-all;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .content{
+      font-size: 14px;
+      color: #888888;
+      letter-spacing: 0;
+      line-height: 22px;
+      max-height: 44px;
+      text-align: center;
+      padding: 0 24px;
+      margin:4px 0 18px;
+      box-sizing: border-box;
+      word-wrap: break-word;
+      word-break: break-all;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .footer{
+      border-top: 1px dashed rgba(178,178,178,0.40);
+      line-height: 64px;
+      font-size: 16px;
+      color: #17181A;
+      text-align:center;
+    }
+  }
+</style>
+<template>
+  <navigator hovar-class="none" url="/pages/topicDetails?id={{card.id}}&project={{card.project}}" class="topic-card">
+    <view class="title">{{card.title}}</view>
+    <view class="content">{{card.content}}</view>
+    <view class="footer">
+      <text wx:if="{{card.subPostTotal>0}}">已有{{card.subPostTotal}}人参与讨论~</text>
+      <text wx:else>快来和我一起聊聊这个话题~</text>
+    </view>
+  </navigator>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+export default class Index extends wepy.component {
+  props = {
+    card: Object
+  }
+  data = {}
+  mixins = [mixin]
+  methods = {
+  }
+}
+</script>

@@ -1,0 +1,51 @@
+<style lang="less" scoped>
+ .header{
+    display: flex;
+    .avatar{
+      margin-right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .user-info{
+      display: flex;
+      flex-direction: column;
+      height: 32px;
+      justify-content: space-between;
+      font-size: 10px;
+      line-height: 14px;
+      color: #B2B2B2;
+      .name{
+        font-size: 14px;
+        line-height: 16px;
+        color: #576B95;
+        margin-bottom: 5px;
+      }
+    }
+  }
+</style>
+<template>
+   <view class="header">
+       <image src="{{topicDetail.headimgurl}}" class="avatar" @tap="userLink"></image>
+       <view class="user-info">
+         <view class="name">{{topicDetail.nickname}}</view>
+         <view>{{topicDetail.uptime}}</view>
+       </view>
+     </view>
+</template>
+<script>
+import wepy from 'wepy'
+import mixin from '../../mixins'
+export default class Index extends wepy.component {
+  props = {
+    topicDetail: Object
+  }
+  data = {}
+  mixins = [mixin]
+  methods = {
+    userLink () {
+      this.toUserPage(this.topicDetail.uid)
+    }
+  }
+}
+</script>

@@ -1,0 +1,192 @@
+<style lang="less">
+page{
+  overflow: hidden;
+}
+.container{
+    height: 100%;
+    overflow: hidden;
+  }
+</style>
+<template>
+<view class="container">
+  <netError wx:if="{{showNetErr}}" text=''></netError>
+  <noJoin wx:if="{{!isJoin}}" :group.sync="recommendList" :end.sync="end" :total.sync="total"></noJoin>
+  <join wx:if="{{isJoin}}"
+  :openid.sync="openid"
+  :info.sync="groupInfo"
+  :signDatas.sync="signDatas"
+  :group.sync="recommendList"
+  :taskData.sync="taskData" 
+  :userInfo.sync="userInfo"
+  :end.sync="end"></join>
+  <guide wx:if="{{firstStatus}}"></guide>
+  <signSuccess wx:if="{{signSuccessStatus}}" :signData.sync="signDatas"></signSuccess>
+  <workSuccess wx:if="{{award}}"></workSuccess>
+  <block wx:if="{{showLoading}}">
+    <loading></loading>
+  </block>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import noJoin from '../components/group/noJoin'
+import join from '../components/group/join'
+import guide from '../components/public/guide' // 第一次诱导
+import signSuccess from '../components/public/signSuccess' // 签到成功
+import workSuccess from '../components/public/workSuccess'
+import loading from '../components/public/loadPage'
+import netError from '../components/public/netError'
+import mixin from '../mixins'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '小组',
+    backgroundColorTop: '#FF9400',
+    enablePullDownRefresh: false
+  }
+  components = {
+    loading,
+    netError,
+    noJoin: noJoin,
+    join: join,
+    guide: guide,
+    signSuccess: signSuccess,
+    workSuccess: workSuccess
+  }
+
+  mixins = [mixin]
+
+  data = {
+    openid: '',
+    showLoading: true, // 显示loading
+    page: 1, // 页数
+    taskData: [], // 任务数据
+    end: false, // 是否到底还有数据
+    isJoin: false,
+    signDatas: {}, // 签到数据信息
+    groupInfo: {}, // 加入小组后的小组信息
+    total: 0, // 无小组时，加入总人数
+    recommendList: [], // 推荐列表
+    firstStatus: false,
+    signSuccessStatus: false, // 签到状态
+    award: false, // 领奖状态
+    userInfo: {}, // 用户具体信息
+    showNetErr: 0 // 网络错误提示
+  }
+  events = {
+    refresh: $event => {
+      // 判断是否加入过小组
+      this.isJoinGroup()
+      // 获取推荐列表
+      this.getRecommendList()
+      wepy.showToast({
+        title: '刷新成功',
+        icon: 'none',
+        duration: 2000
+      })
+    },
+    closeGuide: $event => {
+      this.closeGuide()
+    },
+    sign: $event => {
+      this.signSuccessStatus = !this.signSuccessStatus
+      this.getIntegral()
+    },
+    award: $event => {
+      this.award = !this.award
+    }
+  }
+  computed = {}
+  methods = {}
+  // 判断是否加入过小组
+  async isJoinGroup() {
+    try {
+      if (wepy.getStorageSync('isJoinGroup')) {
+        this.isJoin = true
+        this.groupInfo = wepy.getStorageSync('isJoinGroup')
+        this.closeGuide()
+        // 获取任务数据
+        this.getTaskList(this.openid, this.groupInfo.id)
+      } else {
+        this.isJoin = false
+      }
+      this.showLoading = false
+    } catch (error) {
+      this.showLoading = false
+    }
+    this.$apply()
+  }
+  // 获取推荐小组列表
+  async getRecommendList() {
+    let openid = this.openid
+    try {
+      let res = await wepy.request({
+        url: `${this.host}/getRecommendationGroupList`,
+        data: {
+          openid,
+          page: this.page,
+          size: 10
+        }
+      })
+      let { data, membersTotal } = res.data
+      this.total = membersTotal
+      if (data && data.length) {
+        this.recommendList = data
+        if (data.length < 10) {
+          this.end = true
+        } else {
+          this.page += 1
+        }
+      } else {
+        this.end = true
+      }
+      this.showNetErr = res.statusCode === 200 ? 0 : 1
+    } catch (e) {
+      this.showNetErr = 1
+    }
+    this.$apply()
+  }
+  // 关闭导航页
+  closeGuide() {
+    try {
+      let guide = wepy.getStorageSync('guide')
+      if (!guide) {
+        wepy.setStorageSync('guide', 'true')
+        this.firstStatus = true
+      } else {
+        this.firstStatus = false
+      }
+      this.$apply()
+    } catch (e) {}
+  }
+  onReachBottom(e) {
+    if (this.end) {
+      return
+    }
+    this.getRecommendList()
+  }
+  async getIntegral () {
+    try {
+      let res = await wepy.request(`${this.host}/getSignTotal?openid=${this.openid}`)
+      let {status, data} = res.data
+      if (!status) {
+        this.userInfo = data
+        wepy.setStorageSync('integralTotal', data.integralTotal)
+        this.$apply()
+      }
+    } catch (error) {
+    }
+  }
+  async onShow() {
+    this.openid = await this.getOpenid()
+     // 获取用户所有卡路里总数
+    this.getIntegral()
+    // 判断是否加入过小组
+    this.isJoinGroup()
+    // 获取推荐列表
+    this.getRecommendList()
+    this.$apply()
+  }
+}
+</script>
